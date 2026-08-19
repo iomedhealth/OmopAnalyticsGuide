@@ -134,7 +134,7 @@ A propensity score is the predicted probability of a patient receiving a specifi
     *   When you want to create a study population that is easy to describe and understand, as it closely mimics the structure of a 1:1 or 1:N randomized trial.
     *   When you believe the treatment effect is similar across all types of patients (a concept known as a homogeneous treatment effect).
 *   **The Trade-off:** You may have to discard a large number of control (and sometimes treatment) subjects who cannot be matched, potentially reducing the sample size and generalizability of your results.
-*   **Tooling in R:** After creating your features with [**`PatientProfiles`**](./package_reference/PatientProfiles) and your initial cohorts with [**`CohortConstructor`**](./package_reference/cohortconstructor), the matching itself is typically performed with well-established R packages like **`MatchIt`** or **`Matching`**. You can find extensive documentation on [CRAN](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html).
+*   **Tooling in R:** After creating your features with [**`PatientProfiles`**](./PatientProfiles) and your initial cohorts with [**`CohortConstructor`**](./cohortconstructor), the matching itself is typically performed with well-established R packages like **`MatchIt`** or **`Matching`**. You can find extensive documentation on [CRAN](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html).
 
 **Propensity Score Weighting (IPTW)**
 
@@ -144,13 +144,13 @@ A propensity score is the predicted probability of a patient receiving a specifi
     *   When you want to estimate the average treatment effect on the entire population (ATE) rather than just the treated population.
     *   When matching is difficult due to a small number of controls or poor overlap in propensity scores between the groups.
 *   **The Trade-off:** The methodology can be less intuitive than matching, and in cases where some individuals have extreme propensity scores, the weights can become very large, potentially leading to unstable estimates.
-*   **Tooling in R:** The process is similar to matching. You first generate features with [**`PatientProfiles`**](./package_reference/PatientProfiles). The propensity score model is a standard logistic regression model (using the `glm()` function in R). The weighting is then applied in the final outcome model, for example, within the `coxph()` function from the **`survival`** package. The **`WeightIt`** package on [CRAN](https://cran.r-project.org/web/packages/WeightIt/vignettes/WeightIt.html) can also streamline this process.
+*   **Tooling in R:** The process is similar to matching. You first generate features with [**`PatientProfiles`**](./PatientProfiles). The propensity score model is a standard logistic regression model (using the `glm()` function in R). The weighting is then applied in the final outcome model, for example, within the `coxph()` function from the **`survival`** package. The **`WeightIt`** package on [CRAN](https://cran.r-project.org/web/packages/WeightIt/vignettes/WeightIt.html) can also streamline this process.
 
 *   **Clinical Question:** "To properly compare my two groups, what patient characteristics do I need to account for in my statistical model?"
 
 *   **Core Method:** Creating a rich set of predictor variables (features) for each patient that can be used in a multivariable model to control for confounding.
 
-*   **Primary Tool:** [**`PatientProfiles`**](./package_reference/PatientProfiles)
+*   **Primary Tool:** [**`PatientProfiles`**](./PatientProfiles)
     *   This package is used to generate the detailed patient-level features (e.g., Charlson Comorbidity Index, presence of specific prior conditions, medication history) that are the inputs for multivariable regression models.
 
 
@@ -180,7 +180,7 @@ A propensity score is the predicted probability of a patient receiving a specifi
 *   **Core Method:** Using statistical or machine learning models (e.g., Logistic Regression, Gradient Boosting) to learn patterns from the data and make predictions. This requires creating a very large number of potential predictor variables (features).
 
 *   **Primary Tools for Prediction:**
-    *   [**`PatientProfiles`**](./package_reference/PatientProfiles): As with comparative studies, this is the ideal tool for the initial **feature engineering** step, where you create a curated set of potential predictors.
+    *   [**`PatientProfiles`**](./PatientProfiles): As with comparative studies, this is the ideal tool for the initial **feature engineering** step, where you create a curated set of potential predictors.
     *   [**`PatientLevelPrediction`**](https://ohdsi.github.io/PatientLevelPrediction/): This is the primary, end-to-end framework for building, evaluating, and validating patient-level prediction models. It is designed to work seamlessly with the outputs of `CohortConstructor`.
 
 ### The Prediction Workflow: From Cohorts to a Validated Model

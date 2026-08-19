@@ -63,4 +63,41 @@ After balancing the cohorts, the analysis involves calculating the **relative ri
 
 ## How to Implement This Study
 
-*Code examples and step-by-step instructions will be added here.*
+The following example demonstrates a comparative cohort workflow using [`CohortConstructor`](../package_reference/cohortconstructor) and [`CohortSurvival`](../package_reference/cohortsurvival):
+
+```r
+library(CDMConnector)
+library(CohortConstructor)
+library(CohortCharacteristics)
+library(CohortSurvival)
+library(visOmopResults)
+library(dplyr)
+
+# 1. Connect to OMOP CDM database
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir())
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+
+# 2. Build Target, Active Comparator, and Outcome Cohorts
+cdm$target <- conceptCohort(cdm, list(target_drug = 1125315L), name = "target")
+cdm$comparator <- conceptCohort(cdm, list(comparator_drug = 1118084L), name = "comparator")
+cdm$outcome <- conceptCohort(cdm, list(adverse_event = 192671L), name = "outcome")
+
+# 3. Apply New-User and Washout Requirements
+cdm$target <- cdm$target |>
+  requireIsFirstEntry() |>
+  requirePriorObservation(minPriorObservation = 365)
+
+cdm$comparator <- cdm$comparator |>
+  requireIsFirstEntry() |>
+  requirePriorObservation(minPriorObservation = 365)
+
+# 4. Perform Time-to-Event Survival Estimation
+surv_estimates <- estimateSingleEventSurvival(
+  cdm = cdm,
+  targetCohortTable = "target",
+  outcomeCohortTable = "outcome"
+)
+
+# 5. Plot Kaplan-Meier survival curves
+plotSurvival(surv_estimates)
+```

@@ -2,6 +2,7 @@
 layout: default
 title: IncidencePrevalence
 parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 5
 ---
 
@@ -38,10 +39,10 @@ Here is a basic example of how to use the `IncidencePrevalence` package to calcu
 ### 1. Load Libraries and Create a Mock CDM
 First, load the necessary libraries and create a mock CDM object for demonstration purposes.
 ```r
-library([IncidencePrevalence](https://darwin-eu.github.io/IncidencePrevalence/))
-library([CDMConnector](https://darwin-eu.github.io/CDMConnector/))
+library(IncidencePrevalence)
+library(CDMConnector)
 
-cdm <- [mockIncidencePrevalence](https://darwin-eu.github.io/IncidencePrevalence/)()
+cdm <- mockIncidencePrevalence()
 ```
 
 ### 2. Generate a Denominator Cohort

@@ -2,6 +2,7 @@
 layout: default
 title: PhenotypeR
 parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 10
 ---
 
@@ -33,13 +34,13 @@ remotes::install_github("OHDSI/PhenotypeR")
 Here is a simple example of how to get started with PhenotypeR:
 
 ```r
-library([PhenotypeR](https://ohdsi.github.io/PhenotypeR/))
-library([CDMConnector](https://darwin-eu.github.io/CDMConnector/))
-library([CohortConstructor](https://ohdsi.github.io/CohortConstructor/))
+library(PhenotypeR)
+library(CDMConnector)
+library(CohortConstructor)
 library(dplyr)
 
 # 1. Connect to a mock CDM
-cdm <- [mockPhenotypeR](https://ohdsi.github.io/PhenotypeR/)()
+cdm <- mockPhenotypeR()
 
 # 2. Create a cohort
 cdm$my_cohort <- conceptCohort(

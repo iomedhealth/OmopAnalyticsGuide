@@ -2,6 +2,7 @@
 layout: default
 title: CohortCharacteristics
 parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 4
 ---
 

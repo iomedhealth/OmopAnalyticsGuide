@@ -3,6 +3,7 @@ layout: default
 title: CohortConstructor
 nav_order: 2
 parent: Package Reference
+grand_parent: Data Analysis
 ---
 
 # [CohortConstructor](https://ohdsi.github.io/CohortConstructor/)

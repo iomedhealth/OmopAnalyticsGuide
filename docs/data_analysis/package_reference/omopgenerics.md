@@ -2,32 +2,104 @@
 layout: default
 title: omopgenerics
 parent: Package Reference
+grand_parent: Data Analysis
+nav_order: 13
+---
+
+---
+layout: default
+title: omopgenerics
+parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 13
 ---
 
 # [omopgenerics](https://darwin-eu.github.io/omopgenerics/)
+{: .no_toc}
 
-The [`omopgenerics`](https://darwin-eu.github.io/omopgenerics/) package provides core data structures and generic functions that standardize how OMOP data is represented and manipulated across the ecosystem.
+1. TOC
+{:toc}
 
-## Key Data Classes
+The `omopgenerics` package provides the fundamental data structures, S3 classes, validation systems, and generic methods that ensure seamless interoperability across the entire OHDSI and DARWIN-EU R software ecosystem.
 
-- **`<cdm_reference>`**: Represents a connection to an OMOP CDM database.
-- **`<cdm_table>`**: Individual tables within the CDM.
-- **`<cohort_table>`**: Patient cohorts with required columns:
-  - `cohort_definition_id` - Unique identifier for each cohort
-  - `subject_id` - Unique patient identifier
-  - `cohort_start_date` - Date when person enters cohort
-  - `cohort_end_date` - Date when person exits cohort
-- **`<summarised_result>`**: Standardized output format containing 13 columns for analysis results.
+## Overview
 
-## Core Generic Functions
+In modular analytical pipelines, different packages must agree on standard data structures. `omopgenerics` acts as the shared foundation across all packages (such as `CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`, and `visOmopResults`), defining standardized classes for databases, cohort tables, and study results.
 
-### Result Manipulation:
+### Key Features:
+- **Formal S3 Class Definitions**: Standardized objects for CDM references, cohort tables, and analytical results.
+- **Unified Result Specification (`<summarised_result>`)**: Standard 13-column schema for all epidemiological estimates, counts, and summaries.
+- **Rigorous Class Validation**: Automated checks verifying table column names, data types, and OMOP integrity rules.
+- **Export & Import Pipelines**: Serializes analysis results into standardized CSV archives for federated data sharing.
 
-- `settings()` - Access cohort settings and metadata
-- `attrition()` - Access cohort attrition information
-- `cohortCount()` - Get cohort record and subject counts
-- `splitGroup()`, `splitStrata()`, `splitAdditional()` - Split grouped columns
-- `pivotEstimates()` - Pivot estimate columns to wide format
-- `tidy()` - Convert to tidy format
-- `filterStrata()` - Filter by strata conditions
+---
+
+## Core Data Classes
+
+### 1. `<cdm_reference>`
+Represents an active connection to an OMOP CDM database containing database metadata and pointers to `<cdm_table>` objects.
+
+### 2. `<cohort_table>`
+A specialized database table containing patient cohorts. Every `<cohort_table>` must contain at least four mandatory columns:
+- `cohort_definition_id` (`integer`): Unique numeric identifier for the cohort definition.
+- `subject_id` (`integer`): Unique identifier of the patient (`person_id`).
+- `cohort_start_date` (`date`): Date of cohort entry (index date).
+- `cohort_end_date` (`date`): Date of cohort exit.
+
+Cohort tables carry attached metadata accessible via `settings()`, `attrition()`, and `cohortCount()`.
+
+### 3. `<summarised_result>`
+The universal output format for OHDSI analytics packages, containing a standardized 13-column structure:
+`cdm_name`, `group_name`, `group_level`, `strata_name`, `strata_level`, `variable_name`, `variable_level`, `estimate_name`, `estimate_type`, `estimate_value`, `additional_name`, `additional_level`, `package_name`, `package_version`.
+
+### 4. `<codelist>` & `<concept_set>`
+Named lists of standard concept IDs representing clinical definitions, validated and convertible across formats.
+
+---
+
+## Installation
+
+```r
+install.packages("omopgenerics")
+```
+
+---
+
+## Example Usage
+
+```r
+library(omopgenerics)
+library(dplyr)
+
+# Inspect cohort metadata
+settings(cdm$my_cohort)
+attrition(cdm$my_cohort)
+cohortCount(cdm$my_cohort)
+
+# Export summarised results for federated study sharing
+exportSummarisedResult(
+  result = my_analysis_results,
+  path = "study_results.csv"
+)
+
+# Import results from study partner
+partner_results <- importSummarisedResult(
+  path = "study_results.csv"
+)
+```
+
+---
+
+## Core Generic Functions Reference
+
+| Function | Purpose |
+| :--- | :--- |
+| `cohortCount(cohort)` | Returns record and subject counts for each cohort in a `<cohort_table>`. |
+| `attrition(cohort)` | Retrieves the step-by-step attrition table detailing inclusions and exclusions. |
+| `settings(cohort)` | Returns the metadata and configuration parameters used to construct the cohort. |
+| `validateCohortTable(cohort)` | Verifies that a table meets all formal requirements of an OMOP cohort table. |
+| `validateSummarisedResult(result)`| Validates that an analysis output strictly adheres to the 13-column schema. |
+| `splitGroup()`, `splitStrata()` | Splits grouped and stratified key-value columns into separate tidy columns. |
+| `pivotEstimates()` | Reshapes long `<summarised_result>` estimate columns into a wide tidy data frame. |
+| `exportSummarisedResult(result, path)` | Exports validated results to standard compressed or CSV files. |
+| `importSummarisedResult(path)` | Imports and validates results generated by other network study sites. |

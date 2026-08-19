@@ -2,6 +2,7 @@
 layout: default
 title: PatientProfiles
 parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 3
 ---
 

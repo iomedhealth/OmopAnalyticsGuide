@@ -2,46 +2,101 @@
 layout: default
 title: OmopSketch
 parent: Package Reference
+grand_parent: Data Analysis
+nav_order: 12
+---
+
+---
+layout: default
+title: OmopSketch
+parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 12
 ---
 
 # [OmopSketch](https://ohdsi.github.io/OmopSketch/)
+{: .no_toc}
 
-Provides comprehensive database characterization and quality assessment for OMOP CDM databases.
+1. TOC
+{:toc}
 
-## Database Overview Functions
+The `OmopSketch` package provides fast, automated tools for high-level characterization and exploratory data analysis of OMOP Common Data Model (CDM) databases.
 
-### Snapshot Analysis:
+## Overview
 
-- `summariseOmopSnapshot(cdm)` - Generate real-time database overview including vocabulary version, table sizes, observation period span
-- `tableOmopSnapshot(result, type)` - Format snapshot results into tables
+Before launching an observational study, researchers must understand the shape, size, historical coverage, and data quality of their OMOP database. `OmopSketch` generates rapid summaries ("sketches") of database demographics, table volumes, observation periods, and concept usage patterns.
 
-## Observation Period Analysis
+### Key Features:
+- **Instant Snapshot**: Generates an executive summary of vocabulary versions, patient counts, and table sizes.
+- **Observation Period Dynamics**: Evaluates longitudinal coverage, continuous observation trends, and seasonal gaps.
+- **Clinical Table Profiling**: Analyzes record density, missingness, and mapping proportions across OMOP clinical domains.
+- **Interactive Shiny Explorer**: Launches a self-contained Shiny dashboard for visual exploration of database characteristics.
 
-### Temporal Analysis:
+---
 
-- `summariseObservationPeriod(observationPeriod, sex)` - Analyze observation period characteristics including records per person, duration, gaps
-- `summariseInObservation(observationPeriod, interval, output, ageGroup)` - Track trends over time intervals (years, quarters, months)
-- `plotObservationPeriod(result, plotType, variableName, colour)` - Visualize observation period statistics
-- `plotInObservation(result, colour, facet)` - Plot temporal trends
+## Installation
 
-## Clinical Table Analysis
+```r
+# Install from CRAN
+install.packages("OmopSketch")
 
-### Quality Assessment:
+# Or development version from GitHub
+# pak::pkg_install("ohdsi/OmopSketch")
+```
 
-- `summariseMissingData(cdm, omopTableName, col, sample)` - Analyze missing data patterns and zero concept IDs
-- `summariseClinicalRecords(cdm, omopTableName, recordsPerPerson, inObservation, standardConcept, sourceVocabulary, domainId, typeConcept)` - Comprehensive clinical table characterization
-- `summariseRecordCount(cdm, omopTableName, interval, dateRange)` - Analyze record trends over time
+---
 
-### Concept Analysis:
+## Getting Started
 
-- `summariseConceptIdCounts(cdm, omopTableName, countBy)` - Count records and subjects per concept ID
-- `tableConceptIdCounts(result, display, type)` - Interactive tables of concept counts
-- `tableTopConceptCounts(result, countBy, top, type)` - Display most frequent concepts
+```r
+library(OmopSketch)
+library(CDMConnector)
 
-## Integrated Database Characterization
+# Connect to database
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir())
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 
-### Comprehensive Analysis:
+# 1. Summarize database snapshot
+snapshot <- summariseOmopSnapshot(cdm)
+tableOmopSnapshot(snapshot)
 
-- `databaseCharacteristics(cdm, omopTableName, sex, ageGroup, interval, dateRange, conceptIdCounts)` - Complete database characterization combining all analysis types
-- `shinyCharacteristics(result, directory)` - Create interactive Shiny application for exploring results
+# 2. Analyze observation period coverage
+obs_summary <- summariseObservationPeriod(cdm$observation_period)
+plotObservationPeriod(obs_summary)
+
+# 3. Analyze clinical records in condition_occurrence
+condition_profile <- summariseClinicalRecords(
+  cdm = cdm,
+  omopTableName = "condition_occurrence"
+)
+```
+
+---
+
+## Core API Reference
+
+### Database Snapshot & Overview
+
+| Function | Description |
+| :--- | :--- |
+| `summariseOmopSnapshot(cdm)` | Computes database metadata, vocabulary release, total patient counts, and table row counts. |
+| `tableOmopSnapshot(result)` | Renders a formatted publication-ready table of the database snapshot. |
+
+### Observation Period & Temporal Coverage
+
+| Function | Description |
+| :--- | :--- |
+| `summariseObservationPeriod(observationPeriod)` | Analyzes observation duration, gaps, and records per person. |
+| `summariseInObservation(observationPeriod, interval)` | Tracks population in-observation trends over years, quarters, or months. |
+| `plotObservationPeriod(result)` | Plots distributions of observation time. |
+| `plotInObservation(result)` | Generates temporal trend curves of actively observed patients. |
+
+### Clinical Table Quality & Concept Profiling
+
+| Function | Description |
+| :--- | :--- |
+| `summariseMissingData(cdm, omopTableName)` | Evaluates column completeness and zero/unmapped concept ID frequencies. |
+| `summariseClinicalRecords(cdm, omopTableName)` | Computes records per patient, standard vs non-standard concept mappings, and domain alignment. |
+| `summariseRecordCount(cdm, omopTableName, interval)` | Tracks longitudinal event recording trends across calendar intervals. |
+| `summariseConceptIdCounts(cdm, omopTableName)` | Computes record and patient counts per individual clinical concept ID. |
+| `tableTopConceptCounts(result, top)` | Displays the most frequently recorded concept IDs in a clinical table. |

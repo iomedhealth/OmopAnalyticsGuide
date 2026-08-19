@@ -14,7 +14,7 @@ Observational studies using real-world data (RWD) are essential for understandin
 
 To harness the power of the OMOP CDM, a suite of specialized R packages has been developed. These packages provide a robust, modular framework for every stage of a study. Using this standardized toolkit ensures that research is not only efficient but also adheres to the highest scientific standards, as promoted by regulatory bodies like the European Medicines Agency (EMA) through initiatives such as DARWIN EU.
 
-This section is divided into three key guides to help you navigate this ecosystem:
+This section is divided into four key guides to help you navigate this ecosystem:
 
 1.  **The Conceptual Guide (The "Why"):** If you are new to the OMOP CDM or want to understand the core principles of how clinical ideas are translated into computable definitions, start here. This guide is for researchers, epidemiologists, and anyone who wants to understand the methodology before diving into the code.
     -   Start with the: [Introductory Guide to Observational Research](./intro_to_observational_research)
@@ -82,4 +82,4 @@ tables, figures, and interactive applications.
 | [**`visOmopResults`**](https://darwin-eu.github.io/visOmopResults/) | Creates standardized visualizations and tables from the results of other OHDSI packages. |
 | [**`ggplot2`**](https://ggplot2.tidyverse.org/) | A general-purpose and highly flexible plotting library used for creating custom visualizations. |
 
-For a detailed, step-by-step guide on performing an observational study analysis, see [Performing an Analysis](./performing_analysis.md).
+For a detailed, step-by-step guide on performing an observational study analysis, see [Performing an Analysis](./performing_analysis).

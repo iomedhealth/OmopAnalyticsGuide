@@ -100,7 +100,40 @@ You might be wondering how these `concept_sets` are created and how you can trus
 
 
 
+## 4. The "Who" - Defining Study Cohorts
 
+In clinical research, your protocol always defines target patient populations using strict inclusion and exclusion criteria. In the OMOP CDM, this population is represented as a **Cohort**.
+
+A **Cohort** is a set of persons who satisfy one or more inclusion criteria for a duration of time. Every record in an OMOP cohort table has four fundamental elements:
+
+*   **`cohort_definition_id`**: An identifier distinguishing which cohort definition this record belongs to.
+*   **`subject_id`**: The unique identifier of the patient (`person_id`).
+*   **`cohort_start_date`**: The date the patient entered the cohort (often referred to as the **index date** or "time zero").
+*   **`cohort_end_date`**: The date the patient ceased to meet the cohort criteria (e.g., treatment discontinuation, outcome occurrence, or loss to follow-up).
+
+Using [`CohortConstructor`](https://ohdsi.github.io/CohortConstructor/), base cohorts are created from concept sets and then refined through inclusion/exclusion criteria such as demographic filters (age, sex), prior observation history, or temporal intersections with other clinical events.
+
+
+
+## 5. The "How Well" - Characterising Populations (Table 1)
+
+Once a study cohort is defined, the immediate next step is generating a baseline description of the population—the observational equivalent of **"Table 1"** in a clinical trial.
+
+Baseline characterisation answers fundamental epidemiological questions:
+*   What is the distribution of age, sex, and observation time at the index date?
+*   What is the prevalence of co-existing medical conditions (comorbidities) during the historical baseline window (e.g., 365 days prior to index)?
+*   What concomitant medications were patients taking around the start of therapy?
+
+Packages like [`CohortCharacteristics`](https://darwin-eu.github.io/CohortCharacteristics/) and [`PatientProfiles`](https://darwin-eu.github.io/PatientProfiles/) compute these standardized summaries efficiently directly in the database, producing publication-ready tables via [`visOmopResults`](https://darwin-eu.github.io/visOmopResults/).
+
+
+
+## 6. The "So What" - Quality, Attrition, and Validation
+
+High-quality observational research requires absolute transparency about how the final study population was derived and whether the computable definitions truly capture the intended clinical condition.
+
+*   **Attrition Tracking:** Every restriction applied during cohort construction is tracked step-by-step. Attrition tables and flowcharts record exactly how many subjects and records were excluded at each stage (e.g., excluding patients under 18 or those with less than 365 days of prior observation).
+*   **Phenotype Diagnostics:** Tools like [`PhenotypeR`](https://ohdsi.github.io/PhenotypeR/) perform systematic clinical checks on the generated cohorts—inspecting concept code usage, temporal distributions, and subgroup characteristics—to confirm that the phenotype definition has high clinical fidelity.
 
 
 
@@ -113,7 +146,8 @@ From here, a whole ecosystem of specialized R packages is available to perform m
 *   [**`IncidencePrevalence`**](https://darwin-eu.github.io/IncidencePrevalence/): To calculate how often conditions occur.
 *   [**`CohortSurvival`**](https://darwin-eu-dev.github.io/CohortSurvival/): To perform time-to-event (survival) analysis.
 *   [**`DrugUtilisation`**](https://darwin-eu.github.io/DrugUtilisation/): To study patterns of medication use.
+*   [**`HERMES`**](https://github.com/iomedhealth/hermes): To perform healthcare resource utilization and cost-effectiveness modeling.
 
 You now understand the complete workflow: from a clinical idea, to a standardized `concept_set`, to a study `cohort`, and finally to the tables and figures that will form the core of your research findings.
 
-Welcome to the OMOP Community of RWE;
+Welcome to the OMOP Community of RWE.

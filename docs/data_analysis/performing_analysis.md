@@ -99,7 +99,7 @@ Base cohort creation functions:
 For example, to create a cohort of patients with Hypertrophic Cardiomyopathy (HCM) who have received a first-line therapy:
 
 ```r
-library(CodelistGeneratoror)
+library(CodelistGenerator)
 library(CohortConstructor)
 
 # 1. Get codelists for the disease and treatments
@@ -108,19 +108,19 @@ beta_blockers_codes <- getCodelistFromConceptSet(4886, cdm)
 ccb_non_dhp_codes <- getCodelistFromConceptSet(4887, cdm)
 
 # 2. Combine treatment codes into a single "first-line therapy" codelist
-first_line_therapy_codes <- merge_codelists(
+first_line_therapy_codes <- c(
   beta_blockers_codes,
   ccb_non_dhp_codes
 )
 
 # 3. Create initial cohorts based on the codelists
-cdm$hcm <- concept_cohort(cdm, hcm_codes, name = "hcm")
-cdm$first_line_therapy <- concept_cohort(cdm, first_line_therapy_codes, name = "first_line_therapy")
+cdm$hcm <- conceptCohort(cdm, hcm_codes, name = "hcm")
+cdm$first_line_therapy <- conceptCohort(cdm, first_line_therapy_codes, name = "first_line_therapy")
 
 # 4. Intersect the cohorts to find patients with HCM who have received the therapy
 cdm$hcm_first_line_treated <- cdm$first_line_therapy |>
-  require_cohort_intersect(
-    target_cohort_table = "hcm",
+  requireCohortIntersect(
+    targetCohortTable = "hcm",
     window = c(-Inf, 0) # The HCM diagnosis must be on or before the treatment start date
   )
 ```
@@ -129,12 +129,12 @@ cdm$hcm_first_line_treated <- cdm$first_line_therapy |>
 
 After instantiating your cohort, it's crucial to understand how many patients were included or excluded at each step.
 
-- **Attrition Tracking**: The `summarise_cohort_attrition()` function provides a detailed record of patient exclusions. This is often visualized with `plot_cohort_attrition()`.
+- **Attrition Tracking**: The `summariseCohortAttrition()` function provides a detailed record of patient exclusions. This is often visualized with `plotCohortAttrition()`.
 
 ```r
 cdm$hcm_first_line_treated |>
-  summarise_cohort_attrition() |>
-  plot_cohort_attrition()
+  summariseCohortAttrition() |>
+  plotCohortAttrition()
 ```
 This plot helps ensure the logic of your cohort definition is working as expected and provides transparency for your final study report.
 
@@ -149,21 +149,22 @@ Before proceeding to analysis, it is essential to validate that your cohort defi
 This is the core of the study, where you characterize the study population and perform your main analyses.
 
 ### Baseline Characteristics
-A critical first step is to generate the baseline characteristics of your study population. The [`CohortCharacteristics`](https://darwin-eu.github.io/CohortCharacteristics/) package is designed for this purpose. Functions like `add_age()` and `add_sex()` are standardized helpers from the `PatientProfiles` package that add common demographic variables to your cohort table. By default, age is calculated at the `cohort_start_date`, but this can be configured.
+A critical first step is to generate the baseline characteristics of your study population. The [`CohortCharacteristics`](https://darwin-eu.github.io/CohortCharacteristics/) package is designed for this purpose. Functions like `addAge()` and `addSex()` are standardized helpers from the `PatientProfiles` package that add common demographic variables to your cohort table. By default, age is calculated at the `cohort_start_date`, but this can be configured.
 
 - **Demographics**: You can easily compute age and sex for your cohort.
 - **Comorbidities and Clinical Events**: You can assess the prevalence of various conditions or events in your cohort's history.
 
 ```r
-library([`CohortCharacteristics`](https://darwin-eu.github.io/CohortCharacteristics/))
+library(CohortCharacteristics)
+library(PatientProfiles)
 
 # Example: Summarize age and sex for the study cohort
 cdm$hcm_first_line_treated |>
-  add_age() |>
-  add_sex() |>
-  summarise_characteristics(
+  addAge() |>
+  addSex() |>
+  summariseCharacteristics(
     demographics = TRUE,
-    age_group = list(c(18, 49), c(50, 69), c(70, 150))
+    ageGroup = list(c(18, 49), c(50, 69), c(70, 150))
   )
 ```
 
@@ -181,14 +182,16 @@ The final phase involves generating and exporting the results in a clear and sha
 
 ```r
 library(visOmopResults)
+library(CohortCharacteristics)
+library(PatientProfiles)
 
 # Generate and table the characteristics summary
 results <- cdm$hcm_first_line_treated |>
-  add_age() |>
-  add_sex() |>
-  summarise_characteristics()
+  addAge() |>
+  addSex() |>
+  summariseCharacteristics()
 
-table_characteristics(results)
+tableCharacteristics(results)
 ```
 
 - **Export Results**: You can export all results to structured formats like CSV for transparency, meta-analysis, or use in other programs.

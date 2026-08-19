@@ -2,6 +2,7 @@
 layout: default
 title: CohortSurvival
 parent: Package Reference
+grand_parent: Data Analysis
 nav_order: 7
 ---
 
