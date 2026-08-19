@@ -58,9 +58,9 @@ At a high level, IncidencePrevalence turns OMOP CDM cohorts into tidy, stratifie
 
 Our workflow will follow a simple, powerful pattern common across OHDSI packages: **`summarise -> table/plot`**.
 
-### Step 1: Load Libraries & Connect to the Database
+### Step 1: Load Libraries & Connect to the GiBleed Database
 
-First, we load the necessary libraries. `CDMConnector` provides the tools to connect to and work with an OMOP CDM database. `IncidencePrevalence` is the analytical engine we will use to calculate incidence and prevalence rates. Finally, `visOmopResults` will help us to visualise the results.
+First, we load the necessary libraries. `CDMConnector` provides the connection to the OMOP CDM database, `CohortConstructor` builds clinical cohorts from standard OMOP concepts, `IncidencePrevalence` calculates population-level epidemiology rates, and `visOmopResults` formats the results into publication-ready tables and plots.
 
 ```{r knitr_setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -70,74 +70,107 @@ knitr::opts_chunk$set(
 )
 ```
 
-For this tutorial, we will use `mockIncidencePrevalence()` to create a self-contained, reproducible mock database (`cdm`) object. This allows us to run the analysis without needing a real database connection. The mock data includes a person table, an observation_period table, and an outcome cohort table, which are the minimum requirements for the `IncidencePrevalence` package.
+We connect to the standardized Eunomia **GiBleed** dataset using DuckDB:
 
 ```{r load_libraries}
-# Load necessary libraries from the renv library
 library(CDMConnector)
+library(CohortConstructor)
 library(IncidencePrevalence)
 library(visOmopResults)
+library(dplyr)
 ```
 
-```{r create_mock_database, message=FALSE, warning=FALSE}
-# Create a mock database connection with sample data
-cdm <- mockIncidencePrevalence(sampleSize = 50000)
+```{r connect_gibleed, message=FALSE, warning=FALSE}
+# Ensure GiBleed dataset is available and connect via DuckDB
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 ```
 
-### Step 2: Define the Study Population (The Denominator)
+### Step 2: Define Outcome and Denominator Cohorts
 
-As per our protocol, the study requires a defined source population over a specific time period. We will use `generateDenominatorCohortSet()` to create our analysis population. This function defines the denominator cohort based on observation period start and end dates, age, and sex. Here, we define our study period from 2008 to 2019 and create strata for two age groups (0-64 and 65-100) and by sex.
+In this study, our outcome of interest is **Gastrointestinal Hemorrhage** (`concept_id = 192671`). We instantiate the outcome cohort directly from the OMOP CDM condition table:
+
+```{r define_outcome_cohort, message=FALSE, warning=FALSE}
+# Create the gastrointestinal hemorrhage outcome cohort
+cdm$outcome <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(gi_bleed = 192671L),
+  name = "outcome"
+)
+```
+
+Next, we define our source study population (the denominator). We will study the population observed between 1980 and 2019, stratifying by age groups (0–49 and 50–100) and by sex:
 
 ```{r define_denominator_cohort, message=FALSE, warning=FALSE}
 # Define the denominator cohort for the study period
 cdm <- generateDenominatorCohortSet(
   cdm = cdm,
   name = "denominator",
-  cohortDateRange = as.Date(c("2008-01-01", "2019-01-01")),
+  cohortDateRange = as.Date(c("1980-01-01", "2019-01-01")),
   ageGroup = list(
-    c(0, 64),
-    c(65, 100)
+    c(0, 49),
+    c(50, 100)
   ),
-  sex = c("Male", "Female", "Both"),
+  sex = c("Male", "Female")
 )
 ```
 
 ### Step 3: Calculate Incidence & Prevalence (The `summarise` Step)
 
-This step is the core of our analysis, equivalent to running a `PROC` in SAS. We will use the `IncidencePrevalence` package to "summarise" the data by calculating incidence and prevalence rates.
-
-Our protocol requires stratifying by time, so we will set `interval = "years"`. We also use the `outcomeWashout` parameter to ensure we are only counting *new* cases for our incidence calculation, a key requirement of the protocol.
+This step calculates incidence and prevalence rates across the defined strata.
 
 #### 3.1: Estimate Incidence
 
-Now we will calculate the incidence of our outcome. We use `estimateIncidence()` for this. We specify our denominator and outcome tables. We set `interval` to "quarters" to get quarterly estimates. `outcomeWashout` is set to `Inf` to only include the first occurrence of the outcome for each person. `repeatedEvents` is `FALSE`, meaning a person cannot have the outcome more than once. Finally, we use `plotIncidence` to visualise the results, faceting by age group and sex.
+We calculate annual incidence rates for gastrointestinal hemorrhage. We set `outcomeWashout = Inf` to include only first-ever occurrences and `repeatedEvents = FALSE`. We then visualize the results with `plotIncidence()` and generate a structured table with `tableIncidence()`:
 
 ```{r calculate_incidence_and_plot, echo=TRUE, message=FALSE, warning=FALSE}
-# Calculate incidence rates, stratified by year
+# Calculate annual incidence rates
 inc <- estimateIncidence(
   cdm = cdm,
   denominatorTable = "denominator",
   outcomeTable = "outcome",
-  interval = "quarters",
-  outcomeWashout = Inf, # Require no prior history of the outcome
+  interval = "years",
+  outcomeWashout = Inf,
   repeatedEvents = FALSE
 )
-# View the summarised results
-plotIncidence(inc, facet = c("denominator_age_group", "denominator_sex"))
+
+# Plot incidence rates faceted by age group and colored by sex
+plotIncidence(inc, facet = "denominator_age_group", colour = "denominator_sex")
 ```
 
-#### 3.2: Estimate Prevalence
+```{r table_incidence, echo=TRUE, message=FALSE, warning=FALSE}
+# Display incidence summary table
+tableIncidence(inc)
+```
 
-Next, we'll estimate the point prevalence. We use `estimatePointPrevalence()`, specifying our denominator and outcome tables. We again set the `interval` to "quarters". The `timePoint` parameter is set to "start", meaning prevalence will be calculated at the start of each quarter. We then use `plotPrevalence` to visualise the results, again faceting by age group and sex.
+#### 3.2: Estimate Point Prevalence
+
+Next, we estimate annual point prevalence at the start of each year (`timePoint = "start"`):
 
 ```{r calculate_prevalence_and_plot, echo=TRUE, message=FALSE, warning=FALSE}
-# Calculate point prevalence, stratified by year
+# Calculate annual point prevalence
 prev_point <- estimatePointPrevalence(
   cdm = cdm,
   denominatorTable = "denominator",
   outcomeTable = "outcome",
-  interval = "quarters",
+  interval = "years",
   timePoint = "start"
 )
-plotPrevalence(prev_point, facet = c("denominator_age_group", "denominator_sex"))
+
+# Plot point prevalence faceted by age group and colored by sex
+plotPrevalence(prev_point, facet = "denominator_age_group", colour = "denominator_sex")
+```
+
+```{r table_prevalence, echo=TRUE, message=FALSE, warning=FALSE}
+# Display prevalence summary table
+tablePrevalence(prev_point)
+```
+
+```{r disconnect_db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
 ```

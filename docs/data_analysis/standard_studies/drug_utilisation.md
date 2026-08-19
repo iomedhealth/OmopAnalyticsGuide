@@ -63,37 +63,4 @@ The analysis is primarily descriptive.
 
 ## How to Implement This Study
 
-The following example demonstrates how to implement a Drug Utilisation Study using the [`DrugUtilisation`](../package_reference/drugutilisation) package:
-
-```r
-library(CDMConnector)
-library(DrugUtilisation)
-library(CohortCharacteristics)
-library(visOmopResults)
-library(dplyr)
-
-# 1. Connect to or simulate an OMOP CDM
-cdm <- mockDrugUtilisation(numberIndividuals = 1000)
-
-# 2. Generate an ingredient-based drug user cohort
-cdm <- generateIngredientCohortSet(
-  cdm = cdm,
-  name = "dus_cohort",
-  ingredient = "acetaminophen",
-  gapEra = 30
-)
-
-# 3. Refine cohort to new users with 365 days of prior observation
-cdm$dus_cohort <- cdm$dus_cohort |>
-  requireIsFirstDrugEntry() |>
-  requireObservationBeforeDrug(days = 365)
-
-# 4. Summarise drug utilisation metrics (duration, dose, exposures)
-dus_results <- cdm$dus_cohort |>
-  summariseDrugUtilisation(
-    ingredientConceptId = 1125315
-  )
-
-# 5. Display publication-ready results table
-tableDrugUtilisation(dus_results)
-```
+{% include rmd_output/drug_utilisation.md %}

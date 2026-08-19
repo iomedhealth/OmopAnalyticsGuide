@@ -15,7 +15,7 @@ search:
   focus_shortcut_key: 'k'
 
 url: https://docs.iomed.health
-footer_content: 'Copyright &copy; 2017-2025 IOMED Medical Solutions SL.'
+footer_content: 'Copyright &copy; 2016-2026 IOMED Medical Solutions SL.'
 enable_copy_code_button: true
 aux_links:
   Main Site: https://iomed.health

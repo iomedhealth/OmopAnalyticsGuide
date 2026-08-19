@@ -48,28 +48,4 @@ The primary output is an **Incidence Rate Ratio (IRR)**, which represents the re
 
 ## How to Implement This Study
 
-Self-Controlled Case Series (SCCS) and SCRI studies are executed using the [`SelfControlledCaseSeries`](https://ohdsi.github.io/SelfControlledCaseSeries/) HADES R package:
-
-```r
-library(CDMConnector)
-library(CohortConstructor)
-library(SelfControlledCaseSeries)
-
-# 1. Instantiate Exposure and Outcome Cohorts using CohortConstructor
-cdm$exposure <- conceptCohort(cdm, list(vaccine = 4285898L), name = "exposure")
-cdm$outcome <- conceptCohort(cdm, list(acute_event = 192671L), name = "outcome")
-
-# 2. Configure SCCS Study Data Extraction
-# Defines the risk window (e.g. 1 to 28 days post-exposure)
-covarSettings <- createEraCovariateSettings(
-  label = "Exposure risk window",
-  includeEraIds = 1,
-  start = 1,
-  end = 28,
-  endAnchor = "era start"
-)
-
-# 3. Fit Conditional Poisson Regression
-# Individual-level fixed effects automatically control for time-invariant confounders
-# (e.g., genetics, chronic disease history).
-```
+{% include rmd_output/self_controlled_designs.md %}
