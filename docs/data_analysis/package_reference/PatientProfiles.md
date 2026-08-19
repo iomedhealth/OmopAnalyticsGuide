@@ -3,7 +3,7 @@ layout: default
 title: PatientProfiles
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 3
+nav_order: 12
 ---
 
 # [PatientProfiles](https://darwin-eu.github.io/PatientProfiles/)

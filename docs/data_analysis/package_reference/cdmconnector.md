@@ -3,15 +3,7 @@ layout: default
 title: CDMConnector
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 9
----
-
----
-layout: default
-title: CDMConnector
-parent: Package Reference
-grand_parent: Data Analysis
-nav_order: 9
+nav_order: 1
 ---
 
 # [CDMConnector](https://darwin-eu.github.io/CDMConnector/)

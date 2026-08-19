@@ -3,15 +3,7 @@ layout: default
 title: OmopSketch
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 12
----
-
----
-layout: default
-title: OmopSketch
-parent: Package Reference
-grand_parent: Data Analysis
-nav_order: 12
+nav_order: 11
 ---
 
 # [OmopSketch](https://ohdsi.github.io/OmopSketch/)

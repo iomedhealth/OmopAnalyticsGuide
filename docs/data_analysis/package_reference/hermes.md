@@ -3,7 +3,7 @@ layout: default
 title: HERMES
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 14
+nav_order: 7
 ---
 
 # [HERMES](https://github.com/iomedhealth/hermes)

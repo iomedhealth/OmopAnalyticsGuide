@@ -48,6 +48,7 @@ explaining the underlying concepts and providing executable code examples.
 | [**Patient-Level Prediction**](./patient_level_prediction) | Builds a "risk calculator" to predict an individual patient's probability of experiencing a future health outcome. Using machine learning, it answers: "Based on their clinical history, which patients are at the highest risk of developing a specific disease in the next year?" |
 | [**Pathway Analysis**](./treatment_pathway_analysis) | Maps out the "patient journey" by visualizing the sequence of clinical events (treatments, procedures, or diagnoses) people experience over time. It answers questions like: "What is the most common first-line treatment for a disease, and what do patients typically switch to next?" |
 | [**Impact Evaluation Studies**](./impact_evaluation) | Evaluates the real-world impact of large-scale interventions, such as new public health policies or regulatory actions. It answers: "Did the intervention cause a change in health outcomes or medication usage patterns at the population level?" using methods like Interrupted Time Series. |
+| [**Health Economics & HCRU (HEOR / HTA)**](./heor_hcru_studies) | Evaluates healthcare resource utilisation (HCRU), direct medical expenditures from OMOP cost tables, and comparative cost-effectiveness (CEA/ICER/NMB) to support Health Technology Assessments (HTA) and value-based reimbursement decisions. |
 
 
 [darwin]: https://www.darwin-eu.org/index.php/methods/standardised-analytics

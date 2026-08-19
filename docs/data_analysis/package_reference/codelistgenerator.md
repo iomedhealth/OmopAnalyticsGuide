@@ -3,7 +3,7 @@ layout: default
 title: CodelistGenerator
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 1
+nav_order: 2
 ---
 
 # [CodelistGenerator](https://darwin-eu.github.io/CodelistGenerator/)

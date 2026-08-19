@@ -3,7 +3,7 @@ layout: default
 title: CohortSurvival
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 7
+nav_order: 5
 ---
 
 # [CohortSurvival](https://darwin-eu-dev.github.io/CohortSurvival/)
