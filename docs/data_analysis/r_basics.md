@@ -1,7 +1,8 @@
 ---
 layout: default
 title: R Programming Basics
-parent: Data Analysis
+parent: Performing an Analysis
+grand_parent: Data Analysis
 nav_order: 2
 ---
 

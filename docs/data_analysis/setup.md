@@ -1,8 +1,9 @@
 ---
 layout: default
 title: Setup
-parent: Data Analysis
-nav_order: 3
+parent: Performing an Analysis
+grand_parent: Data Analysis
+nav_order: 1
 ---
 
 # Environment Setup Guide
