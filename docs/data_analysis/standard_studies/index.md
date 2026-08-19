@@ -2,7 +2,7 @@
 layout: default
 title: Standardised Analytics
 parent: Data Analysis
-nav_order: 4
+nav_order: 6
 has_children: true
 ---
 

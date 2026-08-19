@@ -1,22 +1,35 @@
+
 # R Programming Basics
 
-This guide introduces the fundamentals of R programming, focusing on data manipulation with the tidyverse, particularly dplyr. These basics are essential before diving into OMOP-specific analyses.
+This guide introduces the fundamentals of R programming, focusing on
+data manipulation with the **tidyverse**, particularly `dplyr` and
+`dbplyr`. These basics are essential before diving into OMOP-specific
+analyses.
 
 ## Who is this guide for?
 
-This guide is written for anyone who wants to work with databases in a "tidyverse" style—a human-centered, consistent, and composable approach to data analysis.
+This guide is written for anyone who wants to work with databases in a
+“tidyverse” style—a human-centered, consistent, and composable approach
+to data analysis.
 
-- **New to R?** We recommend complementing this guide with [*R for Data Science*](https://r4ds.had.co.nz/).
-- **New to databases?** Familiarize yourself with SQL basics through tutorials like [SQLBolt](https://sqlbolt.com/) or [SQLZoo](https://www.sqlzoo.net/wiki/SQL_Tutorial).
-- **New to the OMOP CDM?** This guide is best paired with [*The Book of OHDSI*](https://ohdsi.github.io/TheBookOfOhdsi/).
+- **New to R?** We recommend complementing this guide with [*R for Data
+  Science*](https://r4ds.had.co.nz/).
+- **New to databases?** Familiarize yourself with SQL basics through
+  tutorials like [SQLBolt](https://sqlbolt.com/) or
+  [SQLZoo](https://www.sqlzoo.net/wiki/SQL_Tutorial).
+- **New to the OMOP CDM?** This guide is best paired with [*The Book of
+  OHDSI*](https://ohdsi.github.io/TheBookOfOhdsi/).
 
 ## Bridging the Gap for Different Backgrounds
 
-This guide is designed to be accessible to readers from various backgrounds. Here's how we address common challenges:
+This guide is designed to be accessible to readers from various
+backgrounds. Here’s how we address common challenges:
 
 ### For SAS Programmers
 
-If you're coming from SAS, you might find the functional programming style of R unfamiliar. Here's a quick mapping of common SAS concepts to their R/dplyr equivalents:
+If you’re coming from SAS, you might find the functional programming
+style of R unfamiliar. Here’s a quick mapping of common SAS concepts to
+their R/dplyr equivalents:
 
 | SAS Concept | R/dplyr Equivalent | Description |
 |----|----|----|
@@ -26,36 +39,47 @@ If you're coming from SAS, you might find the functional programming style of R 
 | `PROC SUMMARY` | `group_by()` + `summarise()` | Grouping and aggregating data |
 | `PROC FREQ` | `count()` | Frequency tables |
 
-Remember, in R, operations are chained using the pipe (`|>`) for readability, similar to how you might chain procedures in SAS.
+Remember, in R, operations are chained using the pipe (`|>`) for
+readability, similar to how you might chain procedures in SAS.
 
 ### For Clinical Experts
 
-If you're new to data analysis but have a strong clinical background, the OMOP CDM might seem overly complex at first. Think of it as a standardized "language" for health data:
+If you’re new to data analysis but have a strong clinical background,
+the OMOP CDM might seem overly complex at first. Think of it as a
+standardized “language” for health data:
 
-- **Why separate tables?** Instead of one big spreadsheet, data is split into logical tables (e.g., `person` for demographics, `condition_occurrence` for diagnoses) to avoid repetition and ensure consistency.
-- **What are concept IDs?** These are standardized codes for medical terms (e.g., "Type 2 Diabetes" might have ID 201826). They ensure everyone uses the same definitions, making research comparable.
-- **Why vocabularies?** OMOP uses controlled vocabularies (like SNOMED or ICD) to map local codes to standard ones, reducing ambiguity.
+- **Why separate tables?** Instead of one big spreadsheet, data is split
+  into logical tables (e.g., `person` for demographics,
+  `condition_occurrence` for diagnoses) to avoid repetition and ensure
+  consistency.
+- **What are concept IDs?** These are standardized codes for medical
+  terms (e.g., “Type 2 Diabetes” might have ID 201826). They ensure
+  everyone uses the same definitions, making research comparable.
+- **Why vocabularies?** OMOP uses controlled vocabularies (like SNOMED
+  or ICD) to map local codes to standard ones, reducing ambiguity.
 
-This structure allows for powerful, scalable analyses across different healthcare systems.
+This structure allows for powerful, scalable analyses across different
+healthcare systems.
 
-### For Data Scientists New to Healthcare (like Martina)
+### For Data Scientists New to Healthcare
 
-If you're proficient in R but unfamiliar with clinical research, we'll explain the "why" behind the code. For example, when we create a "cohort" of patients, it's not just filtering data—it's defining a study population based on clinical criteria to answer specific research questions.
-
-## How is this guide organized?
-
-This guide is divided into two main parts:
-
-1. **General Principles for Working with Databases in R:** The first half focuses on the foundational concepts of using tidyverse-style code to build analytical pipelines. You will learn how to connect to a database, manipulate data, and prepare it for analysis without ever leaving the R environment.
-2. **Applying these Principles to the OMOP CDM:** The second half demonstrates how to apply these general principles specifically to the OMOP Common Data Model. We will explore a suite of specialized R packages that streamline common analytical tasks in observational health research.
+If you’re proficient in R but unfamiliar with clinical research, we’ll
+explain the “why” behind the code. For example, when we create a
+“cohort” of patients, it’s not just filtering data—it’s defining a study
+population based on clinical criteria to answer specific research
+questions.
 
 ## Detailed Chapters Overview
 
-For a deeper dive, the underlying technical manual for this guide is structured into the following detailed chapters. While this page provides a high-level summary, the full manual offers comprehensive examples and technical explanations.
-
 #### **1. A first analysis using data in a database**
 
-The `iris` dataset is a classic example in data science, collected by Edgar Anderson in 1935. It contains measurements of 150 iris flowers from three species: setosa, versicolor, and virginica. Each flower has four measurements: sepal length, sepal width, petal length, and petal width (all in centimeters). The goal is often to classify the species based on these measurements, making it a simple but effective dataset for demonstrating statistical and machine learning techniques.
+The `iris` dataset is a classic example in data science, collected by
+Edgar Anderson in 1935. It contains measurements of 150 iris flowers
+from three species: setosa, versicolor, and virginica. Each flower has
+four measurements: sepal length, sepal width, petal length, and petal
+width (all in centimeters). The goal is often to classify the species
+based on these measurements, making it a simple but effective dataset
+for demonstrating statistical and machine learning techniques.
 
 ### Setting Up Your Environment
 
@@ -72,12 +96,22 @@ library(duckdb)
 
 ### Inserting Data into a Database
 
-Next, we will load the `iris` data into an in-memory `duckdb` database. This simulates a real-world scenario where your data resides in a database server.
+Next, we will load the `iris` data into an in-memory `duckdb` database.
+This simulates a real-world scenario where your data resides in a
+database server.
 
 ``` r
 # Create an in-memory duckdb database
 db <- dbConnect(drv = duckdb())
+```
 
+    ## duckdb is storing downloaded extensions and secrets under ~/.duckdb:
+    ## ℹ /Users/gabriel.maeztu/.duckdb
+    ## This persists across sessions and is shared with the DuckDB CLI and other clients.
+    ## ℹ Run duckdb(shared_home = FALSE) to use a temporary directory instead.
+    ## ℹ See ?duckdb_storage for details and alternatives.
+
+``` r
 # Write the iris dataframe to a table named "iris" in the database
 dbWriteTable(db, "iris", iris)
 
@@ -93,7 +127,10 @@ dbListTables(db)
 
 ### From R to SQL: The Power of `dbplyr`
 
-Now that the data is in a database, we could query it using SQL. However, the magic of the `dbplyr` package is that it allows you to write familiar `dplyr` code, which it automatically translates into SQL for you.
+Now that the data is in a database, we could query it using SQL.
+However, the magic of the `dbplyr` package is that it allows you to
+write familiar `dplyr` code, which it automatically translates into SQL
+for you.
 
 First, create a reference to the `iris` table in the database.
 
@@ -113,15 +150,16 @@ iris_db |>
   )
 ```
 
-    ## # Source:   SQL [?? x 3]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 3
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##   Species        n mean_sepal_length
     ##   <fct>      <dbl>             <dbl>
     ## 1 setosa        50              5.01
     ## 2 versicolor    50              5.94
     ## 3 virginica     50              6.59
 
-When you run this code, `dbplyr` translates it into the following SQL query, sends it to the database, and returns the result.
+When you run this code, `dbplyr` translates it into the following SQL
+query, sends it to the database, and returns the result.
 
 ``` sql
 <SQL>
@@ -133,11 +171,17 @@ FROM iris
 GROUP BY "Species"
 ```
 
+This allows you to perform complex data manipulations using intuitive R
+code, without needing to write complex, database-specific SQL.
+
 ### Bringing Data into R for Visualization
 
-While most data manipulation should happen in the database for efficiency, you will often need to bring the final, summarized data back into R for visualization or modeling. The `collect()` function does this.
+While most data manipulation should happen in the database for
+efficiency, you will often need to bring the final, summarized data back
+into R for visualization or modeling. The `collect()` function does
+this.
 
-Let's create a histogram of sepal length for each flower species.
+Let’s create a histogram of sepal length for each flower species.
 
 ``` r
 iris_db |>
@@ -151,11 +195,13 @@ iris_db |>
 
 ![](/assets/images/rmd_output/visualization-1.png)<!-- -->
 
-This workflow—manipulating data in the database and collecting only the results—is the most efficient way to work with large datasets.
+This workflow—manipulating data in the database and collecting only the
+results—is the most efficient way to work with large datasets.
 
 ### Disconnecting from the Database
 
-When you are finished with your analysis, it is good practice to close the connection to the database.
+When you are finished with your analysis, it is good practice to close
+the connection to the database.
 
 ``` r
 dbDisconnect(db)
@@ -163,14 +209,25 @@ dbDisconnect(db)
 
 #### **2. Core verbs for analytic pipelines utilising a database**
 
-To demonstrate working with multiple tables, we'll extend the `iris` example by creating related tables. We'll split the data into separate tables for species information and measurements, then show how to join them back together.
+To demonstrate working with multiple tables, we’ll extend the `iris`
+example by creating related tables. We’ll split the data into separate
+tables for species information and measurements, then show how to join
+them back together.
 
 ### Setting Up the Database with Multiple Tables
 
 ``` r
 # Create database
 db <- dbConnect(duckdb())
+```
 
+    ## duckdb is storing downloaded extensions and secrets under ~/.duckdb:
+    ## ℹ /Users/gabriel.maeztu/.duckdb
+    ## This persists across sessions and is shared with the DuckDB CLI and other clients.
+    ## ℹ Run duckdb(shared_home = FALSE) to use a temporary directory instead.
+    ## ℹ See ?duckdb_storage for details and alternatives.
+
+``` r
 # Split iris into two tables: species info and measurements
 species_info <- iris |> select(Species) |> distinct() |> mutate(species_id = row_number())
 measurements <- iris |> left_join(species_info, by = "Species")
@@ -186,7 +243,8 @@ measurements_db <- tbl(db, "measurements")
 
 ### Selecting Rows: `filter()` and `distinct()`
 
-Use `filter()` to select rows based on conditions. For example, to find measurements with sepal length > 5:
+Use `filter()` to select rows based on conditions. For example, to find
+measurements with sepal length \> 5:
 
 ``` r
 measurements_db |>
@@ -194,8 +252,8 @@ measurements_db |>
   select(Species, Sepal.Length)
 ```
 
-    ## # Source:   SQL [?? x 2]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 2
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    Species Sepal.Length
     ##    <fct>          <dbl>
     ##  1 setosa           5.1
@@ -217,13 +275,13 @@ measurements_db |>
   distinct(Species)
 ```
 
-    ## # Source:   SQL [?? x 1]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 1
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##   Species   
     ##   <fct>     
     ## 1 setosa    
-    ## 2 virginica 
-    ## 3 versicolor
+    ## 2 versicolor
+    ## 3 virginica
 
 ### Ordering Rows: `arrange()`
 
@@ -235,8 +293,8 @@ measurements_db |>
   select(Species, Sepal.Length)
 ```
 
-    ## # Source:     SQL [?? x 2]
-    ## # Database:   DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:    ?? x 2
+    ## # Database:   DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ## # Ordered by: desc(Sepal.Length)
     ##    Species   Sepal.Length
     ##    <fct>            <dbl>
@@ -265,8 +323,8 @@ measurements_db |>
   select(Species, sepal_ratio, is_large)
 ```
 
-    ## # Source:   SQL [?? x 3]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 3
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    Species sepal_ratio is_large
     ##    <fct>         <dbl> <lgl>   
     ##  1 setosa         1.46 FALSE   
@@ -288,8 +346,8 @@ measurements_db |>
   select(Species, Sepal.Length, Petal.Length)
 ```
 
-    ## # Source:   SQL [?? x 3]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 3
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    Species Sepal.Length Petal.Length
     ##    <fct>          <dbl>        <dbl>
     ##  1 setosa           5.1          1.4
@@ -311,8 +369,8 @@ measurements_db |>
   rename(sepal_length = Sepal.Length)
 ```
 
-    ## # Source:   SQL [?? x 6]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 6
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    sepal_length Sepal.Width Petal.Length Petal.Width Species species_id
     ##           <dbl>       <dbl>        <dbl>       <dbl> <fct>        <int>
     ##  1          5.1         3.5          1.4         0.2 setosa           1
@@ -340,8 +398,8 @@ measurements_db |>
   )
 ```
 
-    ## # Source:   SQL [?? x 3]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 3
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##   Species    avg_sepal count
     ##   <fct>          <dbl> <dbl>
     ## 1 setosa          5.01    50
@@ -355,8 +413,8 @@ measurements_db |>
   count(Species, sort = TRUE)
 ```
 
-    ## # Source:     SQL [?? x 2]
-    ## # Database:   DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:    ?? x 2
+    ## # Database:   DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ## # Ordered by: desc(n)
     ##   Species        n
     ##   <fct>      <dbl>
@@ -366,7 +424,8 @@ measurements_db |>
 
 ### Joining Tables
 
-Joins combine data from multiple tables. For example, to join measurements with species info:
+Joins combine data from multiple tables. For example, to join
+measurements with species info:
 
 ``` r
 measurements_db |>
@@ -374,8 +433,8 @@ measurements_db |>
   select(Species, Sepal.Length)
 ```
 
-    ## # Source:   SQL [?? x 2]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 2
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    Species Sepal.Length
     ##    <fct>          <dbl>
     ##  1 setosa           5.1
@@ -392,7 +451,8 @@ measurements_db |>
 
 ### Constructing a Tidy Analytic Dataset
 
-Let's create a comprehensive dataset by joining tables and performing aggregations:
+Let’s create a comprehensive dataset by joining tables and performing
+aggregations:
 
 ``` r
 analytic_dataset <- measurements_db |>
@@ -415,13 +475,15 @@ analytic_dataset |> collect()
     ## 2 versicolor             5.94             4.26                 50
     ## 3 setosa                 5.01             1.46                 50
 
-This pipeline demonstrates how to build complex queries using `dplyr` verbs, with all operations pushed to the database for efficiency.
+This pipeline demonstrates how to build complex queries using `dplyr`
+verbs, with all operations pushed to the database for efficiency.
 
 #### **3. Supported expressions for database queries**
 
 ### Data Type Conversions
 
-R and SQL handle data types differently. `dbplyr` automatically converts many types, but understanding the mappings is important:
+R and SQL handle data types differently. `dbplyr` automatically converts
+many types, but understanding the mappings is important:
 
 - Logical: `TRUE`/`FALSE` → `TRUE`/`FALSE` or `1`/`0`
 - Character: Strings remain strings
@@ -437,8 +499,8 @@ Standard comparison operators work as expected:
 measurements_db |> filter(Sepal.Length > 5 & Petal.Length > 3)
 ```
 
-    ## # Source:   SQL [?? x 2]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 6
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species    species_id
     ##           <dbl>       <dbl>        <dbl>       <dbl> <fct>           <int>
     ##  1          7           3.2          4.7         1.4 versicolor          2
@@ -472,8 +534,8 @@ measurements_db |>
   )
 ```
 
-    ## # Source:   SQL [?? x 7]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 7
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species species_id
     ##           <dbl>       <dbl>        <dbl>       <dbl> <fct>        <int>
     ##  1          5.1         3.5          1.4         0.2 setosa           1
@@ -512,18 +574,18 @@ species_db |>
   )
 ```
 
-    ## # Source:   SQL [?? x 5]
-    ## # Database: DuckDB 1.4.0 [gabriel.maeztu@Darwin 25.0.0:R 4.5.1/:memory:]
+    ## # A query:  ?? x 5
+    ## # Database: DuckDB 1.5.5 [gabriel.maeztu@Darwin 25.6.0:R 4.6.1/:memory:]
     ##   Species    species_id species_upper species_length species_substr
     ##   <fct>           <int> <chr>                  <dbl> <chr>         
     ## 1 setosa              1 SETOSA                     6 set           
     ## 2 versicolor          2 VERSICOLOR                10 ver           
     ## 3 virginica           3 VIRGINICA                  9 vir
-```
 
 ### Database-Specific Considerations
 
-While `dbplyr` aims for portability, some functions may behave differently:
+While `dbplyr` aims for portability, some functions may behave
+differently:
 
 - DuckDB: Full support for most R functions
 - PostgreSQL: Excellent date/time support
@@ -535,14 +597,16 @@ Always test your queries on your target database system.
 
 ### Principles of Modular Pipelines
 
-1. **Separation of Concerns**: Break down complex queries into smaller, focused steps
-2. **Reusability**: Create functions for common operations
-3. **Readability**: Use clear variable names and comments
-4. **Efficiency**: Minimize data movement between database and R
+1.  **Separation of Concerns**: Break down complex queries into smaller,
+    focused steps
+2.  **Reusability**: Create functions for common operations
+3.  **Readability**: Use clear variable names and comments
+4.  **Efficiency**: Minimize data movement between database and R
 
 ### Example: Analyzing Iris Measurements
 
-Building on the `iris` example, let's create a pipeline to analyze measurements by species:
+Building on the `iris` example, let’s create a pipeline to analyze
+measurements by species:
 
 ``` r
 # Step 1: Filter and prepare data
@@ -597,11 +661,12 @@ species_ratios <- measurements_db |>
 
 ### Handling Complex Joins in Relational Models
 
-In structured data models like OMOP, you'll often need to join multiple tables. Plan your joins carefully:
+In structured data models like OMOP, you’ll often need to join multiple
+tables. Plan your joins carefully:
 
-1. Identify the central table (e.g., `person` in OMOP)
-2. Determine the join keys
-3. Consider the join type (left, inner, etc.)
-4. Chain joins logically
+1.  Identify the central table (e.g., `person` in OMOP)
+2.  Determine the join keys
+3.  Consider the join type (left, inner, etc.)
+4.  Chain joins logically
 
 This approach ensures your pipelines are maintainable and efficient.

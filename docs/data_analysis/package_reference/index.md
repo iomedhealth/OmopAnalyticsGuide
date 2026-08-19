@@ -2,7 +2,7 @@
 layout: default
 title: Package Reference
 parent: Data Analysis
-nav_order: 5
+nav_order: 7
 has_children: true
 ---
 
@@ -53,6 +53,8 @@ graph TB
         E --> J["CohortSurvival"]
         E --> K["PhenotypeR"]
         E --> M["PatientProfiles"]
+        E --> N["HERMES"]
+        M --> N
     end
 
     subgraph "Output Layer"
@@ -62,6 +64,7 @@ graph TB
         J --> L
         K --> L
         M --> L
+        N --> L
     end
 ```
 
@@ -150,6 +153,20 @@ A propensity score is the predicted probability of a patient receiving a specifi
 *   **Primary Tool:** [**`PatientProfiles`**](./package_reference/PatientProfiles)
     *   This package is used to generate the detailed patient-level features (e.g., Charlson Comorbidity Index, presence of specific prior conditions, medication history) that are the inputs for multivariable regression models.
 
+
+## Health Economics & Outcomes Research (HEOR): "Evaluating Value"
+
+**Research Goal:** To evaluate healthcare resource utilization (HCRU), direct medical expenditures, and the cost-effectiveness of clinical interventions to inform Health Technology Assessments (HTA) and payer decisions.
+
+### Healthcare Resource Utilization & Cost-Effectiveness (CEA)
+
+*   **Clinical & Economic Questions:**
+    *   "What are the direct medical costs and hospital utilization patterns associated with this disease or treatment arm?"
+    *   "Is a new therapeutic intervention cost-effective compared to the current standard of care?"
+    *   "What is the Incremental Cost-Effectiveness Ratio (ICER) and the probability of cost-effectiveness across different Willingness-to-Pay thresholds?"
+
+*   **Primary Tool:** [**`HERMES`**](./hermes)
+    *   This package provides an end-to-end 6-stage pipeline bridging OMOP CDM databases (including the `COST` table) to decision-analytic state-transition Markov models, calculating ICERs, Net Monetary Benefit (NMB), and generating Cost-Effectiveness Acceptability Curves (CEAC).
 
 
 ## Prediction Modeling

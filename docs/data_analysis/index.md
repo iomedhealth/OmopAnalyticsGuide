@@ -62,7 +62,7 @@ characterization analyses on the generated cohorts.
 | [**`DrugUtilisation`**](https://darwin-eu.github.io/DrugUtilisation/) | Analyzes patterns of drug use, such as treatment pathways and adherence. |
 | [**`CohortSurvival`**](https://darwin-eu-dev.github.io/CohortSurvival/) | Performs time-to-event (survival) analysis to estimate the risk of outcomes over time. |
 | [**`PatientProfiles`**](https://darwin-eu.github.io/PatientProfiles/) | Adds detailed demographic and clinical features to patient cohorts for in-depth characterization. |
-| [**`PatientProfiles`**](https://darwin-eu.github.io/PatientProfiles/) | Adds detailed demographic and clinical features to patient cohorts for in-depth characterization. |
+| [**`HERMES`**](https://github.com/iomedhealth/hermes) | Provides an end-to-end framework for Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA). |
 | [**`OmopSketch`**](https://ohdsi.github.io/OmopSketch/) | Provides a quick summary or "sketch" of the data in an OMOP CDM instance. |
 
 ### Validation Layer

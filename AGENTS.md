@@ -20,6 +20,14 @@ This document provides instructions for AI agents working on this Jekyll codebas
 - **Error Handling**: Ensure Liquid logic is sound and doesn't produce build errors.
 - **Types**: This is a Jekyll project, so no static typing.
 
+## Computable R Markdown Guides (.Rmd)
+
+- **Executable Proof Points:** Author tutorials, guides, and analytical examples as computable R Markdown files under `StandardStudies/rmd/*.Rmd` whenever possible, ensuring code chunks execute and produce verifiable outputs.
+- **Knitting Workflow:**
+  - Render `.Rmd` sources to `_includes/rmd_output/*.md` using `rmarkdown::render(..., output_format = rmarkdown::github_document(html_preview = FALSE))`.
+  - Configure knitr plots to output to `assets/images/rmd_output/`.
+- **Documentation Embedding:** Reference the knitted outputs in Jekyll doc pages (`docs/**/*.md`) using Liquid includes (e.g. `{% include rmd_output/<name>.md %}`).
+
 ## Testing
 
 - There are no automated tests in this project.

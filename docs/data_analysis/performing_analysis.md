@@ -3,7 +3,7 @@
 layout: default
 title: Performing an Analysis
 parent: Data Analysis
-nav_order: 3
+nav_order: 5
 
 ---
 
