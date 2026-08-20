@@ -1,0 +1,164 @@
+---
+knit: |
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = file.path('../../_includes/rmd_output', paste0(tools::file_path_sans_ext(basename(inputFile)), '.md'))
+    )
+  })
+---
+
+Pathway Analysis maps out the real-world sequence, combination, and transition of therapies or clinical events experienced by patients over time following an initial disease diagnosis.
+
+## How Pathway Analysis Works
+
+- **Target Cohort**: Patients diagnosed with a condition of interest establishing index "time zero".
+- **Event Extraction & Era Building**: Extracting subsequent drug exposures, collapsing adjacent records into treatment eras.
+- **Line of Therapy Assignment**: Chronologically ordering treatment eras into Line 1 (L1), Line 2 (L2), and Line 3 (L3).
+- **Pathway Aggregation & Visualisation**: Quantifying the most frequent therapeutic sequences and visualizing patient journey flows.
+
+## Step 1: Setup & Connect to GiBleed
+
+Load the necessary libraries and establish a connection to the Eunomia **GiBleed** dataset using DuckDB:
+
+```{r setup-knitr, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_knit$set(upload.fun = function(x) sub("^\\.\\./\\.\\./", "/", x))
+knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
+```
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(CDMConnector)
+library(CohortConstructor)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gt)
+```
+
+```{r connect-gibleed, message=FALSE, warning=FALSE}
+# Connect to Eunomia GiBleed dataset
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+```
+
+## Step 2: Define Index Diagnosis Cohort
+
+We define our target cohort as incident patients diagnosed with **Sinusitis** (`concept_id = 4283893, 4294548`):
+
+```{r define-target-cohort, message=FALSE, warning=FALSE}
+# Target Cohort: Incident Sinusitis Patients
+cdm$sinusitis <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(sinusitis = c(4283893L, 4294548L)),
+  name = "sinusitis"
+) |>
+  requireIsFirstEntry()
+```
+
+## Step 3: Extract Longitudinal Medications & Construct Lines of Therapy
+
+We extract all subsequent drug exposures following the diagnosis date, consolidate consecutive exposures into treatment eras, and classify each patient's journey into sequential lines of therapy:
+
+```{r construct-pathways, message=FALSE, warning=FALSE}
+# Extract post-diagnosis drug exposures
+drugs <- cdm$sinusitis |>
+  select(person_id = subject_id, diag_date = cohort_start_date) |>
+  inner_join(
+    cdm$drug_exposure |> select(person_id, drug_concept_id, drug_exposure_start_date),
+    by = "person_id"
+  ) |>
+  filter(drug_exposure_start_date >= diag_date) |>
+  left_join(cdm$concept |> select(concept_id, concept_name), by = c("drug_concept_id" = "concept_id")) |>
+  collect() |>
+  mutate(
+    treatment = case_when(
+      grepl("Ampicillin", concept_name, ignore.case = TRUE) ~ "Ampicillin",
+      grepl("celecoxib", concept_name, ignore.case = TRUE) ~ "Celecoxib",
+      grepl("Diclofenac", concept_name, ignore.case = TRUE) ~ "Diclofenac",
+      grepl("vaccine|toxoid", concept_name, ignore.case = TRUE) ~ "Vaccines",
+      TRUE ~ "Other"
+    )
+  ) |>
+  arrange(person_id, drug_exposure_start_date) |>
+  group_by(person_id) |>
+  mutate(prev_treatment = lag(treatment)) |>
+  filter(is.na(prev_treatment) | treatment != prev_treatment) |>
+  mutate(line_num = row_number()) |>
+  filter(line_num <= 3) |>
+  mutate(line = paste0("Line_", line_num)) |>
+  ungroup()
+
+# Pivot to patient-level pathways
+pathways <- drugs |>
+  pivot_wider(id_cols = person_id, names_from = line, values_from = treatment) |>
+  mutate(
+    Line_1 = ifelse(is.na(Line_1), "None", Line_1),
+    Line_2 = ifelse(is.na(Line_2), "Discontinued", Line_2),
+    Line_3 = ifelse(is.na(Line_3), "Discontinued", Line_3)
+  )
+```
+
+## Step 4: Top Treatment Pathways Summary Table
+
+We aggregate the individual patient journeys into top treatment pathways:
+
+```{r pathway-table, message=FALSE, warning=FALSE}
+# Summarise most common treatment pathways
+pathway_summary <- pathways |>
+  group_by(Line_1, Line_2, Line_3) |>
+  summarise(Patients_N = n(), .groups = "drop") |>
+  mutate(Percentage = round((Patients_N / sum(Patients_N)) * 100, 1)) |>
+  arrange(desc(Patients_N)) |>
+  head(10)
+
+pathway_summary |>
+  gt() |>
+  tab_header(
+    title = "Top Treatment Pathways Following Sinusitis Diagnosis",
+    subtitle = "Sequence Progression across Lines 1, 2, and 3"
+  ) |>
+  cols_label(
+    Line_1 = "1st Line Therapy",
+    Line_2 = "2nd Line Therapy",
+    Line_3 = "3rd Line Therapy",
+    Patients_N = "Patients (N)",
+    Percentage = "Proportion (%)"
+  )
+```
+
+## Step 5: Visualizing Treatment Flow across Lines
+
+We plot the distribution of therapeutic modalities across successive lines of therapy:
+
+```{r plot-pathway, message=FALSE, warning=FALSE}
+# Aggregate by line and treatment
+plot_df <- drugs |>
+  group_by(line, treatment) |>
+  summarise(n = n(), .groups = "drop") |>
+  group_by(line) |>
+  mutate(pct = (n / sum(n)) * 100)
+
+ggplot(plot_df, aes(x = line, y = pct, fill = treatment)) +
+  geom_col(position = "stack", width = 0.6, color = "white") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Treatment Pathway Distribution Across Lines of Therapy",
+    subtitle = "Longitudinal pharmacotherapy progression following initial sinusitis diagnosis",
+    x = "Line of Therapy",
+    y = "Proportion of Patients (%)",
+    fill = "Treatment"
+  ) +
+  theme_minimal()
+```
+
+```{r disconnect-db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```

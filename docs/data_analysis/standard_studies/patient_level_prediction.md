@@ -63,26 +63,4 @@ The final output is a validated prediction model that can be applied to new pati
 
 ## How to Implement This Study
 
-Patient-Level Prediction studies are implemented using the [`PatientLevelPrediction`](https://ohdsi.github.io/PatientLevelPrediction/) (PLP) framework:
-
-```r
-library(CDMConnector)
-library(CohortConstructor)
-library(PatientLevelPrediction)
-
-# 1. Define Target Cohort (T) and Outcome Cohort (O)
-cdm$target <- conceptCohort(cdm, list(new_onset_afib = 313217L), name = "target")
-cdm$outcome <- conceptCohort(cdm, list(ischemic_stroke = 443454L), name = "outcome")
-
-# 2. Extract Multivariable Features & Covariates
-covariateSettings <- FeatureExtraction::createCovariateSettings(
-  useDemographicsGender = TRUE,
-  useDemographicsAgeGroup = TRUE,
-  useConditionGroupEraLongTerm = TRUE,
-  useDrugGroupEraLongTerm = TRUE
-)
-
-# 3. Configure Time-at-Risk (e.g., 365 days post-index) and Train Model
-# Algorithms available: LASSO Logistic Regression, Gradient Boosting, Random Forest
-# Evaluates discrimination (ROC AUC) and internal calibration.
-```
+{% include rmd_output/patient_level_prediction.md %}

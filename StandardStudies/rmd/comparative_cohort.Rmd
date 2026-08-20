@@ -1,0 +1,112 @@
+---
+knit: |
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = file.path('../../_includes/rmd_output', paste0(tools::file_path_sans_ext(basename(inputFile)), '.md'))
+    )
+  })
+---
+
+The [`CohortSurvival`](/docs/data_analysis/package_reference/cohortsurvival) and [`CohortConstructor`](/docs/data_analysis/package_reference/cohortconstructor) packages provide tools for executing comparative cohort time-to-event analyses within the OMOP Common Data Model.
+
+## How Comparative Cohort Survival Works
+
+- **Active Comparator Design**: Define target and comparator treatment cohorts using standard OMOP concepts with `CohortConstructor`.
+- **New-User Requirement**: Restrict entries to incident users with a defined lookback period (`requirePriorObservation`).
+- **Survival Estimation**: Compute non-parametric Kaplan-Meier survival curves and cumulative event probabilities using `estimateSingleEventSurvival()`.
+- **Stratification & Visualisation**: Generate publication tables and faceted survival plots using `tableSurvival()` and `plotSurvival()`.
+
+## Step 1: Setup & Connect to GiBleed
+
+Load the necessary libraries and connect to the Eunomia **GiBleed** dataset using DuckDB:
+
+```{r setup-knitr, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_knit$set(upload.fun = function(x) sub("^\\.\\./\\.\\./", "/", x))
+knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
+```
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(CDMConnector)
+library(CohortConstructor)
+library(CohortSurvival)
+library(visOmopResults)
+library(dplyr)
+```
+
+```{r connect-gibleed, message=FALSE, warning=FALSE}
+# Connect to Eunomia GiBleed dataset
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+```
+
+## Step 2: Build Target, Comparator, and Outcome Cohorts
+
+We define new users of **Celecoxib** (`concept_id = 1118084`) as the target exposure, **Diclofenac** (`concept_id = 1124300`) as the active comparator exposure, and **Gastrointestinal Hemorrhage** (`concept_id = 192671`) as the safety outcome:
+
+```{r build-cohorts, message=FALSE, warning=FALSE}
+# 1. Instantiate Exposure Cohorts (Target & Active Comparator)
+cdm$exposure <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(
+    celecoxib = 1118084L,
+    diclofenac = 1124300L
+  ),
+  name = "exposure"
+) |>
+  requireIsFirstEntry() |>
+  requirePriorObservation(minPriorObservation = 365)
+
+# 2. Instantiate Outcome Cohort (Gastrointestinal Hemorrhage)
+cdm$outcome <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(gi_bleed = 192671L),
+  name = "outcome"
+)
+```
+
+## Step 3: Estimate Time-to-Event Survival
+
+We estimate single-event survival probability comparing the risk of gastrointestinal hemorrhage between the two treatments:
+
+```{r estimate-survival, message=FALSE, warning=FALSE}
+# Estimate Kaplan-Meier survival curves
+surv_estimates <- estimateSingleEventSurvival(
+  cdm = cdm,
+  targetCohortTable = "exposure",
+  outcomeCohortTable = "outcome"
+)
+```
+
+## Step 4: Display Survival Tables and Event Summaries
+
+We generate structured summaries of survival estimates and observed outcome event counts across follow-up time:
+
+```{r survival-tables, message=FALSE, warning=FALSE}
+# Summary table of survival probabilities
+tableSurvival(surv_estimates)
+
+# Table of outcome events and person-time
+tableSurvivalEvents(surv_estimates)
+```
+
+## Step 5: Plot Kaplan-Meier Curves
+
+We visualize the comparative Kaplan-Meier curves for Celecoxib versus Diclofenac users:
+
+```{r plot-survival, message=FALSE, warning=FALSE}
+# Plot comparative Kaplan-Meier survival curves
+plotSurvival(surv_estimates, colour = "target_cohort")
+```
+
+```{r disconnect-db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```

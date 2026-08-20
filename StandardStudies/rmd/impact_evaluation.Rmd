@@ -1,0 +1,178 @@
+---
+knit: |
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = file.path('../../_includes/rmd_output', paste0(tools::file_path_sans_ext(basename(inputFile)), '.md'))
+    )
+  })
+---
+
+Impact Evaluation Studies utilize quasi-experimental designs—such as **Interrupted Time Series (ITS)** and **Difference-in-Differences (DiD)**—to evaluate the causal impact of population-level health policies, regulatory safety warnings, or clinical guideline shifts on longitudinal disease rates or medication usage.
+
+## How Interrupted Time Series Works
+
+- **Longitudinal Rate Series**: Tracking population-level incidence or prevalence rates over time across pre- and post-intervention periods.
+- **Intervention Threshold**: A known calendar cutoff date (e.g. year of a regulatory risk minimization measure).
+- **Segmented Regression**: Modeling the time series piecewise to test for:
+  - **Step Change ($\beta_2$)**: Immediate level jump or drop in outcome rate following the intervention.
+  - **Slope Change ($\beta_3$)**: Change in the long-term rate trajectory or gradient post-intervention.
+
+## Step 1: Setup & Connect to GiBleed
+
+Load the required libraries and connect to the Eunomia **GiBleed** dataset using DuckDB:
+
+```{r setup-knitr, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_knit$set(upload.fun = function(x) sub("^\\.\\./\\.\\./", "/", x))
+knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
+```
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(CDMConnector)
+library(CohortConstructor)
+library(IncidencePrevalence)
+library(visOmopResults)
+library(dplyr)
+library(ggplot2)
+library(gt)
+```
+
+```{r connect-gibleed, message=FALSE, warning=FALSE}
+# Connect to Eunomia GiBleed dataset
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+```
+
+## Step 2: Define Outcome and Longitudinal Denominator
+
+We track annual incidence rates of **Gastrointestinal Hemorrhage** (`concept_id = 192671`) across the source population observed from 1980 through 2019:
+
+```{r define-cohorts, message=FALSE, warning=FALSE}
+# 1. Instantiate Outcome Cohort
+cdm$outcome <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(gi_bleed = 192671L),
+  name = "outcome"
+)
+
+# 2. Instantiate Longitudinal Study Denominator
+cdm <- generateDenominatorCohortSet(
+  cdm = cdm,
+  name = "denominator",
+  cohortDateRange = as.Date(c("1980-01-01", "2019-01-01"))
+)
+```
+
+## Step 3: Estimate Longitudinal Incidence Rates
+
+We calculate annual incidence rates per 100,000 person-years:
+
+```{r estimate-rates, message=FALSE, warning=FALSE}
+# Estimate annual incidence rates
+inc <- estimateIncidence(
+  cdm = cdm,
+  denominatorTable = "denominator",
+  outcomeTable = "outcome",
+  interval = "years",
+  outcomeWashout = Inf,
+  repeatedEvents = FALSE
+)
+
+# Extract tidy rate table
+rates_df <- visOmopResults::tidy(inc) |>
+  filter(!is.na(incidence_100000_pys)) |>
+  mutate(
+    year = as.numeric(substr(incidence_start_date, 1, 4)),
+    rate = as.numeric(incidence_100000_pys)
+  ) |>
+  arrange(year)
+```
+
+## Step 4: Fit Segmented Regression (ITS Model)
+
+We define a policy intervention threshold in the calendar year **2000** and construct the segmented time series variables:
+
+```{r fit-its-model, message=FALSE, warning=FALSE}
+# Set policy intervention year
+intervention_year <- 2000
+
+# Prepare segmented regression design matrix
+its_df <- rates_df |>
+  mutate(
+    time = row_number(),
+    post_int = ifelse(year >= intervention_year, 1, 0),
+    time_after = ifelse(year >= intervention_year, year - intervention_year, 0)
+  )
+
+# Fit Segmented Linear Regression
+its_model <- lm(rate ~ time + post_int + time_after, data = its_df)
+its_df$fitted <- predict(its_model)
+
+# Format regression coefficients
+coefs <- summary(its_model)$coefficients
+res_df <- data.frame(
+  Parameter = c(
+    "Baseline Intercept (Beta 0)",
+    "Pre-intervention Slope (Beta 1)",
+    "Immediate Step Change (Beta 2)",
+    "Slope Change Post-intervention (Beta 3)"
+  ),
+  Estimate = round(coefs[, 1], 2),
+  Std_Error = round(coefs[, 2], 2),
+  t_value = round(coefs[, 3], 2),
+  p_value = round(coefs[, 4], 4)
+)
+
+res_df |>
+  gt() |>
+  tab_header(
+    title = "Segmented Regression Model Results",
+    subtitle = "Impact Evaluation of Regulatory Warning (Year 2000)"
+  ) |>
+  cols_label(
+    Parameter = "Model Parameter",
+    Estimate = "Estimate",
+    Std_Error = "Std. Error",
+    t_value = "t-statistic",
+    p_value = "p-value"
+  )
+```
+
+## Step 5: Plot Interrupted Time Series Trends
+
+We plot the empirical annual rate estimates along with the segmented regression trajectories before and after the intervention:
+
+```{r plot-its, message=FALSE, warning=FALSE}
+ggplot(its_df, aes(x = year)) +
+  geom_point(aes(y = rate), color = "#2b6cb0", size = 2.5) +
+  geom_line(aes(y = fitted, group = post_int), color = "#e53e3e", linewidth = 1.2) +
+  geom_vline(xintercept = intervention_year - 0.5, linetype = "dashed", color = "grey40", linewidth = 0.8) +
+  annotate(
+    "text",
+    x = intervention_year - 1,
+    y = max(its_df$rate) * 0.95,
+    label = "Policy Action (2000)",
+    hjust = 1,
+    fontface = "bold",
+    color = "grey30"
+  ) +
+  labs(
+    title = "Interrupted Time Series: Impact Evaluation Analysis",
+    subtitle = "Segmented regression of annual GI hemorrhage incidence before vs after regulatory action (2000)",
+    x = "Calendar Year",
+    y = "Incidence Rate (per 100,000 Person-Years)"
+  ) +
+  theme_minimal()
+```
+
+```{r disconnect-db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```

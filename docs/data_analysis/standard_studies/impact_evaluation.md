@@ -61,22 +61,4 @@ The analysis uses statistical models to quantify the impact of the intervention.
 
 ## How to Implement This Study
 
-Impact Evaluation studies (ITS and DiD) combine longitudinal incidence/prevalence metrics with segmented regression modeling:
-
-```r
-library(CDMConnector)
-library(IncidencePrevalence)
-library(dplyr)
-
-# 1. Calculate Monthly or Quarterly Rates across the pre- and post-intervention period
-rates <- estimateIncidence(
-  cdm = cdm,
-  denominatorTable = "population_denominator",
-  outcomeTable = "outcome_cohort",
-  interval = "months"
-)
-
-# 2. Fit Segmented Regression (Interrupted Time Series)
-# model <- lm(rate ~ time + intervention_indicator + time_after_intervention, data = rates_df)
-# Tests for immediate step changes and long-term trajectory/slope shifts post-intervention.
-```
+{% include rmd_output/impact_evaluation.md %}

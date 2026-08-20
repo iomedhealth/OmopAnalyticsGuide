@@ -1,0 +1,125 @@
+---
+knit: |
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = file.path('../../_includes/rmd_output', paste0(tools::file_path_sans_ext(basename(inputFile)), '.md'))
+    )
+  })
+---
+
+The [`DrugUtilisation`](/docs/data_analysis/package_reference/drugutilisation) package provides standardized workflows to characterize real-world prescription patterns, treatment duration, dosage, indications, and longitudinal medication adherence from OMOP CDM databases.
+
+## How DrugUtilisation works
+
+- **New-User Cohorts**: Generate drug exposure cohorts with customizable washout and prior observation criteria using `CohortConstructor`.
+- **Utilisation Metrics**: Calculate cumulative exposure duration, number of treatment eras, and quantity using `summariseDrugUtilisation()`.
+- **Indication Analysis**: Identify recorded clinical diagnoses prior to therapy initiation using `summariseIndication()`.
+- **Adherence & Persistence**: Measure treatment continuity via Proportion of Patients Covered (PPC) curves using `summariseProportionOfPatientsCovered()`.
+
+## Step 1: Setup & Connect to GiBleed
+
+First, load the required libraries and establish a connection to the Eunomia **GiBleed** dataset using DuckDB:
+
+```{r setup-knitr, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_knit$set(upload.fun = function(x) sub("^\\.\\./\\.\\./", "/", x))
+knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
+```
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(CDMConnector)
+library(CohortConstructor)
+library(DrugUtilisation)
+library(visOmopResults)
+library(dplyr)
+```
+
+```{r connect-gibleed, message=FALSE, warning=FALSE}
+# Connect to Eunomia GiBleed dataset
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+```
+
+## Step 2: Define New-User Drug Cohort
+
+We define a cohort of new users of **Celecoxib** (`concept_id = 1118084`) with at least 365 days of prior observation:
+
+```{r define-drug-cohort, message=FALSE, warning=FALSE}
+# Create new-user Celecoxib cohort with 365 days prior observation
+cdm$celecoxib <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(celecoxib = 1118084L),
+  name = "celecoxib"
+) |>
+  requireIsFirstEntry() |>
+  requirePriorObservation(minPriorObservation = 365)
+```
+
+## Step 3: Summarise Drug Utilisation Metrics
+
+We calculate key utilisation metrics including duration of exposure, number of eras, and cumulative quantity:
+
+```{r summarise-drug-utilisation, message=FALSE, warning=FALSE}
+# Summarise drug utilisation metrics
+dus_summary <- cdm$celecoxib |>
+  summariseDrugUtilisation(
+    ingredientConceptId = 1118084L
+  )
+
+# Display publication table
+tableDrugUtilisation(dus_summary)
+```
+
+## Step 4: Indication Profiling
+
+We profile baseline clinical indications (such as acute sinusitis, UTI, and asthma) recorded in the 365-day and 30-day windows prior to drug initiation:
+
+```{r summarise-indications, message=FALSE, warning=FALSE}
+# Define potential indication cohorts
+cdm$indications <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(
+    sinusitis = 4283893L,
+    uti = 4116491L,
+    asthma = 4051466L
+  ),
+  name = "indications"
+)
+
+# Summarise indications prior to treatment start
+ind_summary <- cdm$celecoxib |>
+  summariseIndication(
+    indicationCohortName = "indications",
+    indicationWindow = list(c(-365, 0), c(-30, 0))
+  )
+
+# Display indication table
+tableIndication(ind_summary)
+```
+
+## Step 5: Proportion of Patients Covered (Adherence)
+
+We compute and visualize the Proportion of Patients Covered (PPC) over a 365-day post-index horizon to examine longitudinal treatment persistence:
+
+```{r plot-ppc, message=FALSE, warning=FALSE}
+# Calculate PPC over 365 days of follow-up
+ppc <- cdm$celecoxib |>
+  summariseProportionOfPatientsCovered(
+    followUpDays = 365
+  )
+
+# Plot longitudinal patient coverage curve
+plotProportionOfPatientsCovered(ppc)
+```
+
+```{r disconnect-db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```

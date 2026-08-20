@@ -63,22 +63,4 @@ The final result is a quantitative and visual summary of the most frequently tra
 
 ## How to Implement This Study
 
-Treatment and clinical pathway analyses are implemented using the [`TreatmentPatterns`](https://darwin-eu.github.io/TreatmentPatterns/) package:
-
-```r
-library(CDMConnector)
-library(CohortConstructor)
-library(TreatmentPatterns)
-
-# 1. Define Target Diagnosis Cohort and Treatment Event Cohorts
-# targetCohort: Type 2 Diabetes Mellitus
-# eventCohorts: Metformin, Sulfonylureas, SGLT2 inhibitors, GLP-1 agonists
-
-# 2. Configure Pathway Settings
-# - minEraDuration: Minimum days of exposure to qualify as a distinct line of therapy
-# - eraCollapseSize: Window to bridge adjacent exposures of the same treatment
-# - combinationWindow: Window to consider overlapping treatments as combination therapy
-
-# 3. Construct and Aggregate Pathways
-# Generates Sunburst and Sankey diagrams showing transitions from 1st-line to 2nd-line therapies.
-```
+{% include rmd_output/treatment_pathway_analysis.md %}

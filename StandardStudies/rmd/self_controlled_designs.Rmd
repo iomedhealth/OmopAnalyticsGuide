@@ -1,0 +1,151 @@
+---
+knit: |
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = file.path('../../_includes/rmd_output', paste0(tools::file_path_sans_ext(basename(inputFile)), '.md'))
+    )
+  })
+---
+
+Self-Controlled Designs—including the **Self-Controlled Case Series (SCCS)** and the **Self-Controlled Case Risk Interval (SCRI)**—are a class of observational study designs where individuals serve as their own control. By comparing risk within the same person across exposed and unexposed time windows, all time-invariant confounders (e.g. genetics, chronic comorbidities, and socioeconomic factors) are implicitly controlled.
+
+## How Self-Controlled Designs Work
+
+- **Case-Only Population**: Analysis is restricted to patients who experienced the acute outcome of interest.
+- **Risk vs. Control Intervals**: Follow-up time for each individual is partitioned into pre-specified risk windows (e.g., 1–30 days post-exposure) and unexposed control windows (e.g., pre-exposure or distal post-exposure periods).
+- **Conditional Poisson / Risk Comparison**: Within-individual regression models compare the event rate during the risk window to that during the control window to derive the **Incidence Rate Ratio (IRR)**.
+
+## Step 1: Setup & Connect to GiBleed
+
+Load the necessary libraries and establish a connection to the Eunomia **GiBleed** dataset using DuckDB:
+
+```{r setup-knitr, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_knit$set(upload.fun = function(x) sub("^\\.\\./\\.\\./", "/", x))
+knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
+```
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(CDMConnector)
+library(CohortConstructor)
+library(dplyr)
+library(ggplot2)
+library(gt)
+```
+
+```{r connect-gibleed, message=FALSE, warning=FALSE}
+# Connect to Eunomia GiBleed dataset
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+```
+
+## Step 2: Define Exposure and Acute Outcome Cohorts
+
+We define exposure to **Celecoxib** (`concept_id = 1118084`) and the acute outcome of **Gastrointestinal Hemorrhage** (`concept_id = 192671`):
+
+```{r build-cohorts, message=FALSE, warning=FALSE}
+# 1. Instantiate Exposure Cohort
+cdm$exposure <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(celecoxib = 1118084L),
+  name = "exposure"
+)
+
+# 2. Instantiate Outcome Cohort
+cdm$outcome <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(gi_bleed = 192671L),
+  name = "outcome"
+)
+```
+
+## Step 3: Extract Case Series & Calculate Relative Event Timing
+
+We extract all cases (patients who experienced the outcome and received the exposure) and compute the relative day of the outcome relative to treatment initiation ($T_{\text{outcome}} - T_{\text{exposure}}$):
+
+```{r extract-cases, message=FALSE, warning=FALSE}
+# Extract cases with both exposure and outcome
+cases <- cdm$outcome |>
+  select(person_id = subject_id, outcome_date = cohort_start_date) |>
+  inner_join(
+    cdm$exposure |> select(person_id = subject_id, exposure_date = cohort_start_date),
+    by = "person_id"
+  ) |>
+  collect() |>
+  mutate(rel_day = as.numeric(outcome_date - exposure_date))
+
+head(cases)
+```
+
+## Step 4: Diagnostic Event Distribution Plot
+
+A fundamental diagnostic step in SCCS studies is plotting the distribution of events relative to the index exposure date to evaluate whether outcomes cluster within the hypothesized acute risk window:
+
+```{r plot-sccs, message=FALSE, warning=FALSE}
+# Plot event distribution relative to exposure initiation (Day 0)
+ggplot(cases |> filter(abs(rel_day) <= 90), aes(x = rel_day)) +
+  geom_histogram(binwidth = 5, fill = "#3182ce", color = "white") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "#e53e3e", linewidth = 0.8) +
+  annotate("rect", xmin = 1, xmax = 30, ymin = 0, ymax = Inf, alpha = 0.2, fill = "#e53e3e") +
+  labs(
+    title = "Self-Controlled Case Series: Event Distribution Around Exposure",
+    subtitle = "Red shaded area indicates the 30-day post-exposure risk window",
+    x = "Days Relative to Drug Initiation (Day 0)",
+    y = "Incident GI Bleed Cases"
+  ) +
+  theme_minimal()
+```
+
+## Step 5: Risk Window vs. Control Window Comparison
+
+We partition the case follow-up into a 30-day post-exposure risk window ($[+1, +30]$ days) and balanced 30-day pre-exposure ($[-60, -31]$ days) and post-risk ($[+31, +60]$ days) control windows:
+
+```{r summary-table, message=FALSE, warning=FALSE}
+n_cases <- length(unique(cases$person_id))
+n_risk <- sum(cases$rel_day >= 1 & cases$rel_day <= 30)
+n_control_pre <- sum(cases$rel_day >= -60 & cases$rel_day <= -31)
+n_control_post <- sum(cases$rel_day >= 31 & cases$rel_day <= 60)
+
+comparison_df <- data.frame(
+  Window = c(
+    "Pre-exposure Control (-60 to -31 days)",
+    "Acute Risk Window (+1 to +30 days)",
+    "Post-exposure Control (+31 to +60 days)"
+  ),
+  Duration_Days = c(30, 30, 30),
+  Events_N = c(n_control_pre, n_risk, n_control_post),
+  Person_Days = c(n_cases * 30, n_cases * 30, n_cases * 30),
+  Rate_Per_1000_Days = c(
+    (n_control_pre / (n_cases * 30)) * 1000,
+    (n_risk / (n_cases * 30)) * 1000,
+    (n_control_post / (n_cases * 30)) * 1000
+  )
+)
+
+comparison_df |>
+  gt() |>
+  tab_header(
+    title = "Self-Controlled Case Risk Interval Comparison",
+    subtitle = "Celecoxib Exposure vs Acute GI Bleeding"
+  ) |>
+  cols_label(
+    Window = "Analysis Window",
+    Duration_Days = "Duration (Days)",
+    Events_N = "Observed Events (N)",
+    Person_Days = "Person-Days at Risk",
+    Rate_Per_1000_Days = "Event Rate (per 1,000 Person-Days)"
+  ) |>
+  fmt_number(columns = "Rate_Per_1000_Days", decimals = 2)
+```
+
+```{r disconnect-db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
