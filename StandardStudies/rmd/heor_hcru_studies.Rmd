@@ -1,0 +1,179 @@
+---
+knit: |
+  (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_format = rmarkdown::github_document(html_preview = FALSE),
+      output_file = file.path('../../_includes/rmd_output', paste0(tools::file_path_sans_ext(basename(inputFile)), '.md'))
+    )
+  })
+---
+
+The [`HERMES`](/docs/data_analysis/package_reference/hermes) package provides an end-to-end analytical framework for Health Economics and Outcomes Research (HEOR), Healthcare Resource Utilisation (HCRU) evaluation, and Health Technology Assessment (HTA) decision-analytic modeling directly from OMOP CDM databases.
+
+## How the 6-Stage HEOR Pipeline Works
+
+1. **Study Initialisation & Baseline Characterisation**: Defines comparative intervention arms and extracts demographic profiles.
+2. **HCRU Extraction**: Measures encounter rates and lengths of stay across inpatient admissions, emergency visits, outpatient consultations, pharmacotherapy, and procedures.
+3. **Causal Propensity Score Adjustment**: Adjusts for confounding by indication via regularized logistic regression and greedy caliper matching.
+4. **Trajectory Compilation**: Translates longitudinal patient clinical journeys into discrete Markov state-transition matrices.
+5. **Economic Simulation (Markov PSA)**: Executes probabilistic sensitivity analysis sampling Gamma cost distributions and Beta health state utility weights over a defined time horizon.
+6. **Decision Analysis (CEA)**: Estimates the Incremental Cost-Effectiveness Ratio (ICER), Net Monetary Benefit (NMB), Cost-Effectiveness Acceptability Curves (CEAC), and Cost-Effectiveness Planes.
+
+## Step 1: Setup & Connect to GiBleed
+
+Load the necessary libraries and establish a connection to the Eunomia **GiBleed** dataset using DuckDB:
+
+```{r setup-knitr, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_knit$set(upload.fun = function(x) sub("^\\.\\./\\.\\./", "/", x))
+knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
+```
+
+```{r load-libraries, message=FALSE, warning=FALSE}
+library(HERMES)
+library(CDMConnector)
+library(CohortConstructor)
+library(dplyr)
+library(gt)
+library(ggplot2)
+```
+
+```{r connect-gibleed, message=FALSE, warning=FALSE}
+# Connect to Eunomia GiBleed dataset
+Sys.setenv(EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", tempdir()))
+if (!eunomiaIsAvailable("GiBleed")) {
+  downloadEunomiaData("GiBleed")
+}
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomiaDir("GiBleed"))
+cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+```
+
+## Step 2: Define Target, Comparator, and Safety Outcome Cohorts
+
+We instantiate new users of **Celecoxib** (`concept_id = 1118084`) as the target intervention, new users of **Diclofenac** (`concept_id = 1124300`) as the active comparator, and incident **Gastrointestinal Hemorrhage** (`concept_id = 192671`) as the primary health economic outcome:
+
+```{r define-cohorts, message=FALSE, warning=FALSE}
+# Target Cohort: Celecoxib new users
+cdm$target_cohort <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(celecoxib = 1118084L),
+  name = "target_cohort"
+) |>
+  requireIsFirstEntry()
+
+# Comparator Cohort: Diclofenac new users
+cdm$comparator_cohort <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(diclofenac = 1124300L),
+  name = "comparator_cohort"
+) |>
+  requireIsFirstEntry()
+
+# Outcome Cohort: Gastrointestinal Hemorrhage
+cdm$outcome_cohort <- conceptCohort(
+  cdm = cdm,
+  conceptSet = list(gi_bleed = 192671L),
+  name = "outcome_cohort"
+)
+```
+
+## Step 3: Baseline Characterisation & HCRU Extraction
+
+We initialize the study, characterize baseline demographics, and extract longitudinal healthcare resource utilization across baseline ($[-365, -1]$ days) and follow-up ($[0, 365]$ days) windows:
+
+```{r extract-hcru, message=FALSE, warning=FALSE}
+# Initialize HEOR study and extract HCRU
+study <- init(
+  cdm = cdm,
+  target_cohort = "target_cohort",
+  comparator_cohort = "comparator_cohort",
+  outcome_cohort = "outcome_cohort"
+) |>
+  summarise_baseline() |>
+  extract_hcru(
+    baseline_window = c(-365, -1),
+    followup_window = c(0, 365)
+  )
+
+# Summarise per-patient resource utilization rates
+hcru_summary <- study$hcru$patient_summary |>
+  group_by(window) |>
+  summarise(
+    Mean_Inpatient_Admissions = round(mean(inpatient_admissions), 2),
+    Mean_Inpatient_LOS_Days = round(mean(inpatient_los_days), 2),
+    Mean_Prescription_Fills = round(mean(prescription_fills), 2),
+    Mean_Procedure_Count = round(mean(procedure_count), 2),
+    .groups = "drop"
+  )
+
+hcru_summary |>
+  gt() |>
+  tab_header(
+    title = "Healthcare Resource Utilisation (HCRU) Summary",
+    subtitle = "Resource Consumption Across Baseline vs Follow-up Windows"
+  ) |>
+  cols_label(
+    window = "Observation Window",
+    Mean_Inpatient_Admissions = "Inpatient Admissions (Mean)",
+    Mean_Inpatient_LOS_Days = "Length of Stay Days (Mean)",
+    Mean_Prescription_Fills = "Prescription Fills (Mean)",
+    Mean_Procedure_Count = "Procedures & Tests (Mean)"
+  )
+```
+
+## Step 4: Causal Propensity Score Matching & Trajectory Compilation
+
+We fit a regularized logistic regression propensity score model, perform 1:1 nearest-neighbor matching, and compile Markov state-transition probability matrices:
+
+```{r ps-and-trajectories, message=FALSE, warning=FALSE}
+# Causal propensity score adjustment and discrete trajectory modeling
+study <- study |>
+  fit_ps() |>
+  adjust_ps(caliper = 0.2) |>
+  compile_trajectories()
+
+# Assign parametric state-specific unit costs (Baseline maintenance vs GI Bleed event)
+study$costs <- data.frame(
+  health_state = c("State_Baseline", "State_Outcome"),
+  mean_cost = c(450, 4800),
+  se_cost = c(40, 350)
+)
+```
+
+## Step 5: Economic Simulation (Markov PSA) & Cost-Effectiveness Analysis
+
+We execute a 10-year Monte Carlo Probabilistic Sensitivity Analysis (PSA) with 3% annual discounting, followed by decision analysis:
+
+```{r simulate-and-cea, message=FALSE, warning=FALSE}
+# Execute Probabilistic Sensitivity Analysis simulation
+sim <- simulate_economics(
+  traj_obj = study,
+  time_horizon = 10,
+  discount_rate = 0.03,
+  n_samples = 250
+)
+
+# Run Cost-Effectiveness Decision Analysis
+cea <- run_cea(sim)
+```
+
+## Step 6: HTA Decision Plots (CEAC & Cost-Effectiveness Plane)
+
+We generate the Cost-Effectiveness Acceptability Curve (CEAC) showing the probability of cost-effectiveness across Willingness-to-Pay thresholds, and the Cost-Effectiveness Plane:
+
+```{r plot-ceac, message=FALSE, warning=FALSE}
+# Plot Cost-Effectiveness Acceptability Curve (CEAC)
+plot_ceac(cea)
+```
+
+```{r plot-plane, message=FALSE, warning=FALSE}
+# Plot Cost-Effectiveness Plane
+plot_plane(cea)
+```
+
+```{r disconnect-db, include=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```

@@ -70,48 +70,4 @@ The analytical framework combines causal inference and health economic simulatio
 
 ## How to Implement This Study
 
-The following complete workflow demonstrates how to implement an end-to-end HEOR and HCRU study using the [`HERMES`](../package_reference/hermes) R package:
-
-```r
-library(HERMES)
-library(CDMConnector)
-library(CohortConstructor)
-library(dplyr)
-
-# 1. Connect to OMOP CDM database
-con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomiaDir("GiBleed"))
-cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
-
-# 2. Instantiate Target, Comparator, and Outcome Cohorts
-cdm$target_cohort <- conceptCohort(cdm, list(target_cohort = 4285898L), "target_cohort")
-cdm$comparator_cohort <- conceptCohort(cdm, list(comparator_cohort = 4266809L), "comparator_cohort")
-cdm$outcome_cohort <- conceptCohort(cdm, list(outcome_cohort = 192671L), "outcome_cohort")
-
-# 3. Execute 6-Stage HEOR Pipeline
-study <- init(
-  cdm = cdm,
-  target_cohort = "target_cohort",
-  comparator_cohort = "comparator_cohort",
-  outcome_cohort = "outcome_cohort"
-) |>
-  summarise_baseline() |>
-  extract_hcru(
-    baseline_window = c(-365, -1),
-    followup_window = c(0, 365),
-    cost_field = "total_paid"
-  ) |>
-  fit_ps() |>
-  adjust_ps(caliper = 0.2) |>
-  compile_trajectories() |>
-  simulate_economics(
-    time_horizon = 10,
-    discount_rate = 0.03,
-    n_samples = 500
-  ) |>
-  run_cea()
-
-# 4. Generate HTA Visualizations and Summary Tables
-plot_ceac(study)
-plot_plane(study)
-table_summary(study)
-```
+{% include rmd_output/heor_hcru_studies.md %}
