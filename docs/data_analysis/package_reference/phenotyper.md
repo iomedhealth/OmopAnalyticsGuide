@@ -7,6 +7,10 @@ nav_order: 20
 ---
 
 # [PhenotypeR](https://ohdsi.github.io/PhenotypeR/)
+{: .no_toc}
+
+1. TOC
+{:toc}
 
 ## Overview
 

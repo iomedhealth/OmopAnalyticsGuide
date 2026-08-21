@@ -7,6 +7,10 @@ nav_order: 21
 ---
 
 # [visOmopResults](https://darwin-eu.github.io/visOmopResults/)
+{: .no_toc}
+
+1. TOC
+{:toc}
 
 ## Overview
 

@@ -7,6 +7,10 @@ nav_order: 7
 ---
 
 # [CohortSurvival](https://darwin-eu-dev.github.io/CohortSurvival/)
+{: .no_toc}
+
+1. TOC
+{:toc}
 
 ## Overview
 

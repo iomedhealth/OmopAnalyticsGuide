@@ -7,6 +7,10 @@ nav_order: 10
 ---
 
 # [DrugUtilisation](https://darwin-eu.github.io/DrugUtilisation/)
+{: .no_toc}
+
+1. TOC
+{:toc}
 
 ## Overview
 

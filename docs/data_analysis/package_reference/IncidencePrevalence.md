@@ -7,6 +7,10 @@ nav_order: 12
 ---
 
 # [IncidencePrevalence](https://darwin-eu.github.io/IncidencePrevalence/)
+{: .no_toc}
+
+1. TOC
+{:toc}
 
 ## Overview
 

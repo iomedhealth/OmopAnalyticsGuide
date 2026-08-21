@@ -7,6 +7,10 @@ nav_order: 2
 ---
 
 # [CodelistGenerator](https://darwin-eu.github.io/CodelistGenerator/)
+{: .no_toc}
+
+1. TOC
+{:toc}
 
 [CodelistGenerator](https://darwin-eu.github.io/CodelistGenerator/) is an R package for generating and evaluating codelists of medical concepts in the Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM). It provides functions to create codelists from OMOP vocabularies using keyword searches, clinical code hierarchies (e.g., ATC, ICD10), or by importing existing concept set definitions. The package also includes tools for analysing the use of codes in a database, helping researchers to refine and validate their codelists.
 
