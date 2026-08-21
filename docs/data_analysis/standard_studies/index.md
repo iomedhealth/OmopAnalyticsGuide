@@ -14,6 +14,7 @@ principle is simple yet powerful: instead of sending a study protocol to each
 data partner to be independently implemented, a single, validated analytical
 code package is sent. This eliminates variability in implementation, ensuring
 that any differences in results are due to the data itself, not the code.
+Tools like [**`OmopStudyBuilder`**](../package_reference/OmopStudyBuilder) provide the standard framework for scaffolding, reviewing, and Docker-packaging these study packages.
 
 > "Standardised Analytics are needed to speed up evidence generation whilst preserving the quality, reproducibility, and transparency of the proposed research."
 >

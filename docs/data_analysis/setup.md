@@ -50,7 +50,8 @@ install.packages(c(
   "DrugUtilisation",
   "OmopSketch",
   "visOmopResults",
-  "CohortCharacteristics"
+  "CohortCharacteristics",
+  "OmopStudyBuilder"
 ))
 ```
 

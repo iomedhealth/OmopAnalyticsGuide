@@ -88,4 +88,11 @@ tables, figures, and interactive applications.
 | [**`OmopViewer`**](https://ohdsi.github.io/OmopViewer/) | Automatically exports interactive Shiny dashboard applications to explore and share `<summarised_result>` study outputs. |
 | [**`ggplot2`**](https://ggplot2.tidyverse.org/) | A general-purpose and highly flexible plotting library used for creating custom visualizations. |
 
+### Study Packaging & Distribution Layer
+These packages scaffold, review, and containerize study pipelines for reproducible execution across distributed research networks.
+
+| Library | Purpose |
+| :--- | :--- |
+| [**`OmopStudyBuilder`**](https://oxford-pharmacoepi.github.io/OmopStudyBuilder/) | Scaffolds standardized network study repositories, audits dependencies with `renv`, and packages studies into Docker containers for headless or interactive execution. |
+
 For a detailed, step-by-step guide on performing an observational study analysis, see [Performing an Analysis](./performing_analysis).

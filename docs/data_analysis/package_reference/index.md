@@ -37,6 +37,10 @@ The R package ecosystem follows a layered architecture where foundation packages
 
 ```mermaid
 graph TB
+    subgraph "Study Scaffolding & Distribution Layer"
+        SB["OmopStudyBuilder"]
+    end
+
     subgraph "Foundation & Construction Layer"
         A["omopgenerics"] --> B["CDMConnector"]
         A --> C["omock"]
@@ -79,6 +83,9 @@ graph TB
         N3 --> L
         L --> OV["OmopViewer"]
     end
+
+    SB -. scaffolds & packages .-> B
+    SB -. builds .-> OV
 ```
 
 ---
@@ -247,3 +254,16 @@ In summary, **`CohortConstructor`** is your tool for defining the "who" and "wha
     *   [**`OmopConstructor`**](./OmopConstructor): Derives and rebuilds standardized OMOP CDM tables (such as `observation_period`) directly against database connections.
     *   [**`visOmopResults`**](./visomopresults): Converts `<summarised_result>` objects into standardized publication tables and figures.
     *   [**`OmopViewer`**](./OmopViewer): Automatically generates deployable, interactive R Shiny dashboards from study `<summarised_result>` objects without manual app development.
+
+
+## Study Scaffolding, Review & Network Execution
+
+**Research Goal:** To structure, quality-audit, containerize, and distribute complete OMOP study packages across multi-center research networks.
+
+*   **Clinical & Operational Questions:**
+    *   "How do we scaffold a standardized R project that separates phenotype diagnostics from main analytical pipelines?"
+    *   "How do we audit study code and lock down dependencies before sharing the package with external data partners?"
+    *   "How can data partners execute the study package reproducibly via Docker without manual environment configuration?"
+
+*   **Primary Tool:**
+    *   [**`OmopStudyBuilder`**](./OmopStudyBuilder): Scaffolds standardized network study repositories, audits study code and `renv.lock` dependencies, and packages analyses into reproducible Docker containers for interactive RStudio Server or automated batch execution.

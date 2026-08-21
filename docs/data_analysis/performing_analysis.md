@@ -49,8 +49,11 @@ flowchart LR
 
 The initial phase involves setting up the R environment and establishing a connection to the database.
 
+### Study Scaffolding
+- **Project Structure**: Use [`OmopStudyBuilder`](./package_reference/OmopStudyBuilder) (`initStudy()`) to generate a standardized directory hierarchy that separates main analyses (`studyCode/`), phenotype diagnostics (`diagnosticsCode/`), and interactive Shiny dashboards (`studyShiny/`, `diagnosticsShiny/`).
+
 ### Environment Setup
-- **Dependency Management**: It is best practice to use `renv` to ensure a reproducible environment. `renv` creates a lockfile that captures the exact versions of all R packages used in your project. This is like ensuring every statistician on your team is using the exact same version of SAS and its modules, preventing "it works on my machine" problems.
+- **Dependency Management**: It is best practice to use `renv` to ensure a reproducible environment. `renv` creates a lockfile that captures the exact versions of all R packages used in your project. This is like ensuring every statistician on your team is using the exact same version of SAS and its modules, preventing "it works on my machine" problems. You can audit these dependencies using `OmopStudyBuilder::reviewStudyDependencies()`.
 
 ### Database Connection
 - **Connection**: The first step in your R script is to establish a live connection to the OMOP CDM database using the [`CDMConnector`](https://darwin-eu.github.io/CDMConnector/) package. This creates a `cdm` object that points to the database tables without loading them into memory.
@@ -194,3 +197,4 @@ tableCharacteristics(results)
 ```
 
 - **Export Results**: You can export all results to structured formats like CSV for transparency, meta-analysis, or use in other programs.
+- **Packaging & Network Distribution**: Use [`OmopStudyBuilder`](./package_reference/OmopStudyBuilder) (`dockeriseStudy()`) to package the complete study code and locked dependencies into a Docker container, enabling partner sites to execute the study reproducibly via `runStudy()` or `runRStudio()`.
