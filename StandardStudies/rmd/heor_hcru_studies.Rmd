@@ -10,7 +10,7 @@ knit: |
   })
 ---
 
-The [`HERMES`](/docs/data_analysis/package_reference/hermes) package provides an end-to-end analytical framework for Health Economics and Outcomes Research (HEOR), Healthcare Resource Utilisation (HCRU) evaluation, and Health Technology Assessment (HTA) decision-analytic modeling directly from OMOP CDM databases.
+The [`CohortEconomics`](/docs/data_analysis/package_reference/CohortEconomics), [`CohortUtilisation`](/docs/data_analysis/package_reference/CohortUtilisation), and [`CohortCosts`](/docs/data_analysis/package_reference/CohortCosts) packages provide an end-to-end analytical framework for Health Economics and Outcomes Research (HEOR), Healthcare Resource Utilisation (HCRU) evaluation, and Health Technology Assessment (HTA) decision-analytic modeling directly from OMOP CDM databases.
 
 ## How the 6-Stage HEOR Pipeline Works
 
@@ -32,7 +32,9 @@ knitr::opts_chunk$set(fig.path = "../../assets/images/rmd_output/")
 ```
 
 ```{r load-libraries, message=FALSE, warning=FALSE}
-library(HERMES)
+library(CohortEconomics)
+library(CohortUtilisation)
+library(CohortCosts)
 library(CDMConnector)
 library(CohortConstructor)
 library(dplyr)

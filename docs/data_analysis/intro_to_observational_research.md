@@ -146,7 +146,8 @@ From here, a whole ecosystem of specialized R packages is available to perform m
 *   [**`IncidencePrevalence`**](https://darwin-eu.github.io/IncidencePrevalence/): To calculate how often conditions occur.
 *   [**`CohortSurvival`**](https://darwin-eu-dev.github.io/CohortSurvival/): To perform time-to-event (survival) analysis.
 *   [**`DrugUtilisation`**](https://darwin-eu.github.io/DrugUtilisation/): To study patterns of medication use.
-*   [**`HERMES`**](https://github.com/iomedhealth/hermes): To perform healthcare resource utilization and cost-effectiveness modeling.
+*   [**`CohortUtilisation`**](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortUtilisation) & [**`CohortCosts`**](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortCosts): To extract healthcare resource utilization (HCRU) and direct medical expenditures.
+*   [**`CohortEconomics`**](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortEconomics): To perform causal propensity score modeling and cost-effectiveness analysis.
 
 You now understand the complete workflow: from a clinical idea, to a standardized `concept_set`, to a study `cohort`, and finally to the tables and figures that will form the core of your research findings.
 

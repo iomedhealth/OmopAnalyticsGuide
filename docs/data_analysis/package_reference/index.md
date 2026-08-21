@@ -53,8 +53,12 @@ graph TB
         E --> J["CohortSurvival"]
         E --> K["PhenotypeR"]
         E --> M["PatientProfiles"]
-        E --> N["HERMES"]
-        M --> N
+        E --> N1["CohortUtilisation"]
+        E --> N2["CohortCosts"]
+        E --> N3["CohortEconomics"]
+        M --> N1
+        M --> N2
+        M --> N3
     end
 
     subgraph "Output Layer"
@@ -64,7 +68,9 @@ graph TB
         J --> L
         K --> L
         M --> L
-        N --> L
+        N1 --> L
+        N2 --> L
+        N3 --> L
     end
 ```
 
@@ -158,15 +164,24 @@ A propensity score is the predicted probability of a patient receiving a specifi
 
 **Research Goal:** To evaluate healthcare resource utilization (HCRU), direct medical expenditures, and the cost-effectiveness of clinical interventions to inform Health Technology Assessments (HTA) and payer decisions.
 
-### Healthcare Resource Utilization & Cost-Effectiveness (CEA)
+### Healthcare Resource Utilization & Direct Costing
 
 *   **Clinical & Economic Questions:**
-    *   "What are the direct medical costs and hospital utilization patterns associated with this disease or treatment arm?"
+    *   "What are the healthcare encounter rates, lengths of stay, and readmissions for this cohort?"
+    *   "What are the direct medical expenditures (inpatient, outpatient, pharmacy, procedures) associated with managing this disease or treatment arm?"
+
+*   **Primary Tools:**
+    *   [**`CohortUtilisation`**](./CohortUtilisation): Extracts in-database healthcare resource utilization (HCRU) across inpatient, ICU, emergency, outpatient, prescription, and procedure domains.
+    *   [**`CohortCosts`**](./CohortCosts): Links polymorphic OMOP `COST` records to clinical events and computes direct medical expenditures and unit cost tariffs.
+
+### Decision-Analytic Modeling & Cost-Effectiveness (CEA)
+
+*   **Clinical & Economic Questions:**
     *   "Is a new therapeutic intervention cost-effective compared to the current standard of care?"
     *   "What is the Incremental Cost-Effectiveness Ratio (ICER) and the probability of cost-effectiveness across different Willingness-to-Pay thresholds?"
 
-*   **Primary Tool:** [**`HERMES`**](./hermes)
-    *   This package provides an end-to-end 6-stage pipeline bridging OMOP CDM databases (including the `COST` table) to decision-analytic state-transition Markov models, calculating ICERs, Net Monetary Benefit (NMB), and generating Cost-Effectiveness Acceptability Curves (CEAC).
+*   **Primary Tool:** [**`CohortEconomics`**](./CohortEconomics)
+    *   Implements an end-to-end 6-stage pipeline bridging OMOP CDM databases to causal propensity score adjustment (`Cyclops`), discrete Markov state-transition models, probabilistic sensitivity analysis (PSA), and decision-analytic curves (`BCEA`).
 
 
 ## Prediction Modeling

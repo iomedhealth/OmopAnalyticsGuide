@@ -12,4 +12,6 @@ OHDSI/CohortConstructor,https://ohdsi.github.io/CohortConstructor/,CohortConstru
 OHDSI/OmopSketch,https://ohdsi.github.io/OmopSketch/,OmopSketch
 OHDSI/PhenotypeR,https://ohdsi.github.io/PhenotypeR/,PhenotypeR
 OHDSI/omock,https://ohdsi.github.io/omock/,omock
-iomedhealth/hermes,https://github.com/iomedhealth/hermes,hermes
+iomedhealth/CohortUtilisation,https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortUtilisation,CohortUtilisation
+iomedhealth/CohortCosts,https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortCosts,CohortCosts
+iomedhealth/CohortEconomics,https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortEconomics,CohortEconomics

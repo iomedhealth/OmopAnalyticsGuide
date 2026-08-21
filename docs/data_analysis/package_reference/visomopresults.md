@@ -3,7 +3,7 @@ layout: default
 title: visOmopResults
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 14
+nav_order: 16
 ---
 
 # [visOmopResults](https://darwin-eu.github.io/visOmopResults/)
