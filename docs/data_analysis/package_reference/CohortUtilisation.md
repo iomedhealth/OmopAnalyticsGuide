@@ -6,7 +6,7 @@ grand_parent: Data Analysis
 nav_order: 9
 ---
 
-# [CohortUtilisation](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortUtilisation)
+# [CohortUtilisation](https://iomedhealth.github.io/omopHeor/)
 {: .no_toc}
 
 1. TOC

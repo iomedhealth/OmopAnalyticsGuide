@@ -6,7 +6,7 @@ grand_parent: Data Analysis
 nav_order: 6
 ---
 
-# [CohortEconomics](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortEconomics)
+# [CohortEconomics](https://iomedhealth.github.io/omopHeor/)
 {: .no_toc}
 
 1. TOC

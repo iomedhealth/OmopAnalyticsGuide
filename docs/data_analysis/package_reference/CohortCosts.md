@@ -6,7 +6,7 @@ grand_parent: Data Analysis
 nav_order: 5
 ---
 
-# [CohortCosts](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortCosts)
+# [CohortCosts](https://iomedhealth.github.io/omopHeor/)
 {: .no_toc}
 
 1. TOC
