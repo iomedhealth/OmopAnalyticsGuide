@@ -92,10 +92,12 @@ We generate structured summaries of survival estimates and observed outcome even
 
 ```{r survival-tables, message=FALSE, warning=FALSE}
 # Summary table of survival probabilities
-tableSurvival(surv_estimates)
+tableSurvival(surv_estimates, times = c(0, 30, 90, 180, 365))
 
-# Table of outcome events and person-time
-tableSurvivalEvents(surv_estimates)
+# Table of outcome events and person-time constrained to key milestones
+surv_estimates |>
+  filterAdditional(time %in% c(0, 30, 90, 180, 365)) |>
+  tableSurvivalEvents()
 ```
 
 ## Step 5: Plot Kaplan-Meier Curves

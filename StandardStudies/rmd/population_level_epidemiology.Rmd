@@ -104,14 +104,14 @@ cdm$outcome <- conceptCohort(
 )
 ```
 
-Next, we define our source study population (the denominator). We will study the population observed between 1980 and 2019, stratifying by age groups (0–49 and 50–100) and by sex:
+Next, we define our source study population (the denominator). We will study the population observed between 2010 and 2019, stratifying by age groups (0–49 and 50–100) and by sex:
 
 ```{r define_denominator_cohort, message=FALSE, warning=FALSE}
 # Define the denominator cohort for the study period
 cdm <- generateDenominatorCohortSet(
   cdm = cdm,
   name = "denominator",
-  cohortDateRange = as.Date(c("1980-01-01", "2019-01-01")),
+  cohortDateRange = as.Date(c("2010-01-01", "2019-01-01")),
   ageGroup = list(
     c(0, 49),
     c(50, 100)
@@ -144,8 +144,10 @@ plotIncidence(inc, facet = "denominator_age_group", colour = "denominator_sex")
 ```
 
 ```{r table_incidence, echo=TRUE, message=FALSE, warning=FALSE}
-# Display incidence summary table
-tableIncidence(inc)
+# Display concise 5-year recent trend table
+inc |>
+  filterAdditional(incidence_start_date >= as.Date("2014-01-01")) |>
+  tableIncidence()
 ```
 
 #### 3.2: Estimate Point Prevalence
@@ -167,8 +169,10 @@ plotPrevalence(prev_point, facet = "denominator_age_group", colour = "denominato
 ```
 
 ```{r table_prevalence, echo=TRUE, message=FALSE, warning=FALSE}
-# Display prevalence summary table
-tablePrevalence(prev_point)
+# Display concise 5-year recent trend table
+prev_point |>
+  filterAdditional(prevalence_start_date >= as.Date("2014-01-01")) |>
+  tablePrevalence()
 ```
 
 ```{r disconnect_db, include=FALSE}

@@ -94,8 +94,10 @@ This is the core of the patient-level characterization analysis. We generate a c
 ```{r summarize-baseline-characteristics, message=FALSE, warning=FALSE}
 # Summarize baseline characteristics (demographics)
 chars <- summariseCharacteristics(cdm$nsaids)
-# Display baseline characteristics table
-tableCharacteristics(chars)
+# Display concise baseline characteristics table
+chars |>
+  dplyr::filter(variable_name %in% c("Number subjects", "Age", "Sex", "Prior observation")) |>
+  tableCharacteristics()
 ```
 
 ```{r plot-age-distribution, message=FALSE, warning=FALSE}
@@ -112,7 +114,7 @@ The `summariseCharacteristics` function allows creating custom clinical flags wi
 # Summarize baseline comorbidity flags in the 365 days prior to index
 flags_summary <- cdm$nsaids |>
   summariseCharacteristics(
-    demographics = TRUE,
+    demographics = FALSE,
     conceptIntersectFlag = list(
       "Baseline Comorbidities" = list(
         conceptSet = list(
