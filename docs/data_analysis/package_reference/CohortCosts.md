@@ -3,7 +3,7 @@ layout: default
 title: CohortCosts
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 8
+nav_order: 5
 ---
 
 # [CohortCosts](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortCosts)

@@ -3,7 +3,7 @@ layout: default
 title: CohortUtilisation
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 7
+nav_order: 8
 ---
 
 # [CohortUtilisation](https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortUtilisation)
