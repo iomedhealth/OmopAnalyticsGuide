@@ -15,3 +15,8 @@ OHDSI/omock,https://ohdsi.github.io/omock/,omock
 iomedhealth/CohortUtilisation,https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortUtilisation,CohortUtilisation
 iomedhealth/CohortCosts,https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortCosts,CohortCosts
 iomedhealth/CohortEconomics,https://github.com/iomedhealth/omopHeor/tree/main/packages/CohortEconomics,CohortEconomics
+OHDSI/CohortSymmetry,https://ohdsi.github.io/CohortSymmetry/,CohortSymmetry
+oxford-pharmacoepi/EpiStandard,https://oxford-pharmacoepi.github.io/EpiStandard/,EpiStandard
+OHDSI/MeasurementDiagnostics,https://ohdsi.github.io/MeasurementDiagnostics/,MeasurementDiagnostics
+OHDSI/OmopConstructor,https://ohdsi.github.io/OmopConstructor/,OmopConstructor
+OHDSI/OmopViewer,https://ohdsi.github.io/OmopViewer/,OmopViewer

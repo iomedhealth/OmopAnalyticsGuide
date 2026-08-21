@@ -37,9 +37,10 @@ The R package ecosystem follows a layered architecture where foundation packages
 
 ```mermaid
 graph TB
-    subgraph "Foundation Layer"
+    subgraph "Foundation & Construction Layer"
         A["omopgenerics"] --> B["CDMConnector"]
         A --> C["omock"]
+        B --> OC["OmopConstructor"]
     end
 
     subgraph "Analysis Layer"
@@ -51,7 +52,10 @@ graph TB
         E --> H["IncidencePrevalence"]
         E --> I["DrugUtilisation"]
         E --> J["CohortSurvival"]
+        E --> CSYM["CohortSymmetry"]
+        E --> ES["EpiStandard"]
         E --> K["PhenotypeR"]
+        D --> MD["MeasurementDiagnostics"]
         E --> M["PatientProfiles"]
         E --> N1["CohortUtilisation"]
         E --> N2["CohortCosts"]
@@ -61,16 +65,19 @@ graph TB
         M --> N3
     end
 
-    subgraph "Output Layer"
+    subgraph "Output & Visualization Layer"
         G --> L["visOmopResults"]
         H --> L
         I --> L
         J --> L
+        CSYM --> L
         K --> L
         M --> L
+        MD --> L
         N1 --> L
         N2 --> L
         N3 --> L
+        L --> OV["OmopViewer"]
     end
 ```
 
@@ -90,14 +97,16 @@ graph TB
 *   **Primary Tool:** [**`CohortCharacteristics`**](./cohortcharacteristics)
     *   This package is purpose-built to generate the detailed "Table 1" summaries that are a cornerstone of clinical research, allowing for easy comparison across different study groups.
 
-### Incidence and Prevalence
+### Incidence, Prevalence & Rate Standardisation
 
 *   **Clinical Questions:**
     *   "How common is this disease in the population?" (Prevalence)
     *   "How many new cases of this disease occur over a given time period?" (Incidence)
+    *   "How do rates compare across regions or eras after adjusting for population age structures?"
 
-*   **Primary Tool:** [**`IncidencePrevalence`**](./IncidencePrevalence)
-    *   This package provides a standardized, validated methodology for calculating incidence and prevalence, which is critical for disease epidemiology and burden-of-illness studies.
+*   **Primary Tools:**
+    *   [**`IncidencePrevalence`**](./IncidencePrevalence): Standardized methodology for calculating incidence and prevalence across study populations.
+    *   [**`EpiStandard`**](./EpiStandard): Direct age standardisation of incidence and prevalence rates against standard reference populations (e.g. ESP 2013, WHO).
 
 ### Drug Utilization
 
@@ -123,6 +132,7 @@ graph TB
 *   **Primary Tools:**
 *   [**`CohortConstructor`**](./cohortconstructor): The essential first step. This package allows you to build the highly specific treatment (target) and control (comparator) cohorts needed for the comparison. Its powerful temporal features are critical for defining new-user cohorts and applying washout periods.
 *   [**`CohortSurvival`**](./cohortsurvival): The primary tool for performing time-to-event (survival) analysis after you have constructed your cohorts. It allows you to calculate adjusted Hazard Ratios to compare outcomes over time.
+*   [**`CohortSymmetry`**](./CohortSymmetry): The dedicated tool for self-controlled Sequence Symmetry Analysis (SSA) and adverse event signal detection, calculating Crude (CSR) and Adjusted (ASR) sequence ratios.
 
 ### Feature Engineering for Adjustment
 
@@ -215,13 +225,25 @@ The OHDSI toolkit provides a powerful and standardized workflow for prediction s
 In summary, **`CohortConstructor`** is your tool for defining the "who" and "what" of your prediction question, and **`PatientLevelPrediction`** is your specialized framework for building and rigorously validating the model itself.
 
 
-## Phenotype Development and Validation
+## Phenotype Development, Measurements & Validation
 
-**Research Goal:** To ensure that the way we define a disease or condition in the database is clinically accurate and valid. This is a foundational quality-control step for all other analyses.
+**Research Goal:** To ensure that the way we define a disease, condition, or laboratory measurement in the database is clinically accurate and valid.
 
 *   **Clinical Questions:**
     *   "Does my algorithm for identifying 'myocardial infarction' in this database correctly capture the true cases?"
-    *   "What is the positive predictive value (PPV) of my cohort definition compared to a gold standard?"
+    *   "How complete and consistent are numeric values, units, and categories for this laboratory measurement?"
 
-*   **Primary Tool:** [**`PhenotypeR`**](./phenotyper)
-    *   This package is a specialized diagnostic toolkit designed to rigorously test and validate your phenotype definitions, ensuring your study is built on a solid foundation.
+*   **Primary Tools:**
+    *   [**`PhenotypeR`**](./phenotyper): Specialized diagnostic toolkit to rigorously test and validate phenotype definitions.
+    *   [**`MeasurementDiagnostics`**](./MeasurementDiagnostics): Evaluates recording patterns, unit consistency, numeric distributions, and outliers for measurement concepts.
+    *   [**`OmopSketch`**](./omopsketch): Characterizes and profiles tables across an entire OMOP CDM instance for study feasibility.
+
+
+## Table Construction & Interactive Dashboards
+
+**Research Goal:** To construct standardized CDM tables and deliver interactive dashboards for sharing privacy-preserving results with clinical collaborators and stakeholders.
+
+*   **Primary Tools:**
+    *   [**`OmopConstructor`**](./OmopConstructor): Derives and rebuilds standardized OMOP CDM tables (such as `observation_period`) directly against database connections.
+    *   [**`visOmopResults`**](./visomopresults): Converts `<summarised_result>` objects into standardized publication tables and figures.
+    *   [**`OmopViewer`**](./OmopViewer): Automatically generates deployable, interactive R Shiny dashboards from study `<summarised_result>` objects without manual app development.

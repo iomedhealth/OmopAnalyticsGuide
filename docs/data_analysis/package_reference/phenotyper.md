@@ -3,7 +3,7 @@ layout: default
 title: PhenotypeR
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 15
+nav_order: 20
 ---
 
 # [PhenotypeR](https://ohdsi.github.io/PhenotypeR/)

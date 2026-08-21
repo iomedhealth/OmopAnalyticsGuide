@@ -3,7 +3,7 @@ layout: default
 title: IncidencePrevalence
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 10
+nav_order: 12
 ---
 
 # [IncidencePrevalence](https://darwin-eu.github.io/IncidencePrevalence/)

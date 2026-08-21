@@ -3,7 +3,7 @@ layout: default
 title: DrugUtilisation
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 9
+nav_order: 10
 ---
 
 # [DrugUtilisation](https://darwin-eu.github.io/DrugUtilisation/)
