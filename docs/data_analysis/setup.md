@@ -31,14 +31,35 @@ This guide is structured as an RStudio Project, which helps keep all files organ
 
 The analytical workflows in this guide depend on a rich ecosystem of R **packages**. Packages are collections of functions and code that extend R's capabilities, similar to add-ins in other software. The packages we will install provide tools for connecting to databases, manipulating data, and running specific OMOP analyses.
 
-In the **R Console** (the window in RStudio where you type commands), run the following command to install all required packages. This may take several minutes.
+### Step 3.1: Install DuckDB (Precompiled Binary)
 
-> **Note:** You will see a lot of text printed to the console during this process, which is normal. As long as you do not see a final message that explicitly says 'Error:', the installation was likely successful.
+> **Important:** DuckDB embeds a full C++ analytical database engine. Compiling it from source can take 15–30+ minutes and requires substantial memory. Installing the **precompiled binary** takes only a few seconds.
+
+In the **R Console**, install the DuckDB binary first using DuckDB's repository or forcing the binary package:
+
+```r
+# Recommended: Install DuckDB precompiled binary from DuckDB R-Universe
+install.packages(
+  "duckdb",
+  repos = c("https://duckdb.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+*Platform-specific notes:*
+* **macOS / Windows:** You can also force CRAN binaries with `install.packages("duckdb", type = "binary")`. If R asks *"Do you want to install from sources the package which needs compilation?"*, always choose **No**.
+* **Linux (Ubuntu, Debian, RHEL):** Use [Posit Public Package Manager](https://packagemanager.posit.co/) binary repository to avoid source compilation:
+  ```r
+  options(repos = c(CRAN = "https://packagemanager.posit.co/cran/latest"))
+  install.packages("duckdb")
+  ```
+
+### Step 3.2: Install OMOP Analytics Packages
+
+Once DuckDB is installed, install the remaining core OMOP analysis packages:
 
 ```r
 install.packages(c(
   "DBI",
-  "duckdb",
   "here",
   "usethis",
   "dplyr",
@@ -54,6 +75,8 @@ install.packages(c(
   "OmopStudyBuilder"
 ))
 ```
+
+> **Note:** You will see text printed to the console during this process, which is normal. As long as you do not see a final message that explicitly says 'Error:', the installation was successful.
 
 ## 4. Mock Database Configuration (Eunomia)
 

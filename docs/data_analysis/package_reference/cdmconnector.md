@@ -41,6 +41,15 @@ Or install the development version from GitHub:
 pak::pkg_install("darwin-eu/CDMConnector")
 ```
 
+If connecting to local DuckDB databases or Eunomia mock data, install the precompiled DuckDB driver binary:
+
+```r
+install.packages(
+  "duckdb",
+  repos = c("https://duckdb.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
 ---
 
 ## System Architecture
