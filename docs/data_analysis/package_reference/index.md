@@ -101,7 +101,7 @@ graph TB
     *   "What are their baseline demographics, comorbidities, and prior medications?"
     *   "How does my treatment group compare to my control group before the study begins?" (Generating "Table 1")
 
-*   **Primary Tool:** [**`CohortCharacteristics`**](./cohortcharacteristics)
+*   **Primary Tool:** [**`CohortCharacteristics`**](./CohortCharacteristics)
     *   This package is purpose-built to generate the detailed "Table 1" summaries that are a cornerstone of clinical research, allowing for easy comparison across different study groups.
 
 ### Incidence, Prevalence & Rate Standardisation
@@ -122,7 +122,7 @@ graph TB
     *   "How long do patients typically stay on this therapy?" (Persistence)
     *   "What are the common treatment pathways or sequences of drugs for this condition?"
 
-*   **Primary Tool:** [**`DrugUtilisation`**](./drugutilisation)
+*   **Primary Tool:** [**`DrugUtilisation`**](./DrugUtilisation)
     *   This package is essential for studying real-world prescribing patterns and patient behaviors related to medication use.
 
 
@@ -137,8 +137,8 @@ graph TB
     *   "Does Exposure X increase the risk of a specific side effect compared to no exposure?"
 
 *   **Primary Tools:**
-*   [**`CohortConstructor`**](./cohortconstructor): The essential first step. This package allows you to build the highly specific treatment (target) and control (comparator) cohorts needed for the comparison. Its powerful temporal features are critical for defining new-user cohorts and applying washout periods.
-*   [**`CohortSurvival`**](./cohortsurvival): The primary tool for performing time-to-event (survival) analysis after you have constructed your cohorts. It allows you to calculate adjusted Hazard Ratios to compare outcomes over time.
+*   [**`CohortConstructor`**](./CohortConstructor): The essential first step. This package allows you to build the highly specific treatment (target) and control (comparator) cohorts needed for the comparison. Its powerful temporal features are critical for defining new-user cohorts and applying washout periods.
+*   [**`CohortSurvival`**](./CohortSurvival): The primary tool for performing time-to-event (survival) analysis after you have constructed your cohorts. It allows you to calculate adjusted Hazard Ratios to compare outcomes over time.
 *   [**`CohortSymmetry`**](./CohortSymmetry): The dedicated tool for self-controlled Sequence Symmetry Analysis (SSA) and adverse event signal detection, calculating Crude (CSR) and Adjusted (ASR) sequence ratios.
 
 ### Feature Engineering for Adjustment
@@ -157,7 +157,7 @@ A propensity score is the predicted probability of a patient receiving a specifi
     *   When you want to create a study population that is easy to describe and understand, as it closely mimics the structure of a 1:1 or 1:N randomized trial.
     *   When you believe the treatment effect is similar across all types of patients (a concept known as a homogeneous treatment effect).
 *   **The Trade-off:** You may have to discard a large number of control (and sometimes treatment) subjects who cannot be matched, potentially reducing the sample size and generalizability of your results.
-*   **Tooling in R:** After creating your features with [**`PatientProfiles`**](./PatientProfiles) and your initial cohorts with [**`CohortConstructor`**](./cohortconstructor), the matching itself is typically performed with well-established R packages like **`MatchIt`** or **`Matching`**. You can find extensive documentation on [CRAN](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html).
+*   **Tooling in R:** After creating your features with [**`PatientProfiles`**](./PatientProfiles) and your initial cohorts with [**`CohortConstructor`**](./CohortConstructor), the matching itself is typically performed with well-established R packages like **`MatchIt`** or **`Matching`**. You can find extensive documentation on [CRAN](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html).
 
 **Propensity Score Weighting (IPTW)**
 
@@ -241,9 +241,9 @@ In summary, **`CohortConstructor`** is your tool for defining the "who" and "wha
     *   "How complete and consistent are numeric values, units, and categories for this laboratory measurement?"
 
 *   **Primary Tools:**
-    *   [**`PhenotypeR`**](./phenotyper): Specialized diagnostic toolkit to rigorously test and validate phenotype definitions.
+    *   [**`PhenotypeR`**](./PhenotypeR): Specialized diagnostic toolkit to rigorously test and validate phenotype definitions.
     *   [**`MeasurementDiagnostics`**](./MeasurementDiagnostics): Evaluates recording patterns, unit consistency, numeric distributions, and outliers for measurement concepts.
-    *   [**`OmopSketch`**](./omopsketch): Characterizes and profiles tables across an entire OMOP CDM instance for study feasibility.
+    *   [**`OmopSketch`**](./OmopSketch): Characterizes and profiles tables across an entire OMOP CDM instance for study feasibility.
 
 
 ## Table Construction & Interactive Dashboards
@@ -252,7 +252,7 @@ In summary, **`CohortConstructor`** is your tool for defining the "who" and "wha
 
 *   **Primary Tools:**
     *   [**`OmopConstructor`**](./OmopConstructor): Derives and rebuilds standardized OMOP CDM tables (such as `observation_period`) directly against database connections.
-    *   [**`visOmopResults`**](./visomopresults): Converts `<summarised_result>` objects into standardized publication tables and figures.
+    *   [**`visOmopResults`**](./visOmopResults): Converts `<summarised_result>` objects into standardized publication tables and figures.
     *   [**`OmopViewer`**](./OmopViewer): Automatically generates deployable, interactive R Shiny dashboards from study `<summarised_result>` objects without manual app development.
 
 

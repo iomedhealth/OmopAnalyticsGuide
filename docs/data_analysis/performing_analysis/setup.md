@@ -33,7 +33,7 @@ The analytical workflows in this guide depend on a rich ecosystem of R **package
 
 ### Step 3.1: Install DuckDB (Precompiled Binary)
 
-> **Important:** DuckDB embeds a full C++ analytical database engine. Compiling it from source can take 15–30+ minutes and requires substantial memory. Installing the **precompiled binary** takes only a few seconds. If your installation hangs, see the [Troubleshooting Guide](./troubleshooting).
+> **Important:** DuckDB embeds a full C++ analytical database engine. Compiling it from source can take 15–30+ minutes and requires substantial memory. Installing the **precompiled binary** takes only a few seconds. If your installation hangs, see the [Troubleshooting Guide](../troubleshooting).
 
 In the **R Console**, install the DuckDB binary first using DuckDB's repository or forcing the binary package:
 
@@ -116,7 +116,7 @@ The verification script will perform the following actions:
 
 **To run the verification:**
 
-1.  In the RStudio **Files pane** (typically in the bottom-right), navigate to the `docs/data_analysis/` folder.
+1.  In the RStudio **Files pane** (typically in the bottom-right), navigate to the `docs/data_analysis/performing_analysis/` folder.
 2.  Click on the `CodeToRun.R` file to open it in the script editor.
 3.  Run the entire script by clicking the **Run** button at the top of the script editor, or by using the keyboard shortcut `Ctrl+Alt+R` (Windows) or `Cmd+Option+R` (Mac).
 
