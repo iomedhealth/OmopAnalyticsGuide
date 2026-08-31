@@ -14,7 +14,7 @@ Observational studies using real-world data (RWD) are essential for understandin
 
 To harness the power of the OMOP CDM, a suite of specialized R packages has been developed. These packages provide a robust, modular framework for every stage of a study. Using this standardized toolkit ensures that research is not only efficient but also adheres to the highest scientific standards, as promoted by regulatory bodies like the European Medicines Agency (EMA) through initiatives such as DARWIN EU.
 
-This section is divided into four key guides to help you navigate this ecosystem:
+This section is divided into key guides to help you navigate this ecosystem:
 
 1.  **The Conceptual Guide (The "Why"):** If you are new to the OMOP CDM or want to understand the core principles of how clinical ideas are translated into computable definitions, start here. This guide is for researchers, epidemiologists, and anyone who wants to understand the methodology before diving into the code.
     -   Start with the: [Introductory Guide to Observational Research](./intro_to_observational_research)
@@ -27,6 +27,9 @@ This section is divided into four key guides to help you navigate this ecosystem
 
 4.  **The Study Templates (The "How To"):** This section contains complete, executable examples of different types of observational studies (e.g., a cohort characterization, an incidence/prevalence study). These templates serve as a practical starting point and can be adapted for your own research questions.
     -   Adapt from the: [Catalogue of Standard Studies](./standard_studies)
+
+5.  **Troubleshooting:** Solutions to common setup, installation (e.g., DuckDB compilation issues), database connection, and runtime errors.
+    -   Review the: [Troubleshooting Guide](./troubleshooting)
 
 ## Package Categories and Purposes
 

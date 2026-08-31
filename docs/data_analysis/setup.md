@@ -33,7 +33,7 @@ The analytical workflows in this guide depend on a rich ecosystem of R **package
 
 ### Step 3.1: Install DuckDB (Precompiled Binary)
 
-> **Important:** DuckDB embeds a full C++ analytical database engine. Compiling it from source can take 15–30+ minutes and requires substantial memory. Installing the **precompiled binary** takes only a few seconds.
+> **Important:** DuckDB embeds a full C++ analytical database engine. Compiling it from source can take 15–30+ minutes and requires substantial memory. Installing the **precompiled binary** takes only a few seconds. If your installation hangs, see the [Troubleshooting Guide](./troubleshooting).
 
 In the **R Console**, install the DuckDB binary first using DuckDB's repository or forcing the binary package:
 
