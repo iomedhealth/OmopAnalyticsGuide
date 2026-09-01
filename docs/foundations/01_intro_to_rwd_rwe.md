@@ -195,38 +195,53 @@ The findings demonstrated the real-world generalizability gap:
 
 ### 2.3 RWE Across the Treatment Product Lifecycle
 
+Real-World Evidence generates value across every phase of a therapeutic product's development and commercial lifecycle, evolving from early disease characterization to post-market safety surveillance:
+
 ```mermaid
-flowchart TD
-    subgraph Discovery["1. Discovery & Pre-Development"]
-        D1["Disease Natural History & Burden"]
-        D2["Descriptive Epidemiology & Incidence"]
-        D3["Unmet Medical Need Identification"]
-        D1 --> D2 --> D3
+flowchart LR
+    subgraph P1["1. Pre-Clinical & Discovery"]
+        direction TB
+        A1["Disease Natural History"]
+        A2["Incidence & Prevalence"]
+        A3["Unmet Need & Target Sizing"]
     end
 
-    subgraph ClinicalDev["2. Clinical Development & Testing"]
-        C1["Trial Protocol & Feasibility Optimization"]
-        C2["Synthetic / External Control Arms (ECA)"]
-        C3["Pragmatic Clinical Trials (PCT)"]
-        C4["Long-term Trial Follow-up Extension"]
-        C1 --> C2 --> C3 --> C4
+    subgraph P2["2. Clinical Development (Ph I–III)"]
+        direction TB
+        B1["Protocol Feasibility Simulation"]
+        B2["External / Synthetic Control Arms"]
+        B3["Pragmatic Trial Extensions"]
     end
 
-    subgraph PostMarket["3. Post-Marketing & Market Access"]
-        P1["Post-Authorization Safety Studies (PASS)"]
-        P2["Drug Utilization Studies (DUS) & Treatment Pathways"]
-        P3["Comparative Effectiveness vs. Active Comparators"]
-        P4["Health Economics & Outcomes Research (HEOR / HTA)"]
-        P1 --> P2 --> P3 --> P4
+    subgraph P3["3. Regulatory Approval & Launch"]
+        direction TB
+        C1["Label Expansions & Submissions"]
+        C2["Health Economics (HEOR / HTA)"]
+        C3["Budget Impact & Pricing Dossiers"]
     end
 
-    D3 --> C1
-    C4 --> P1
+    subgraph P4["4. Post-Marketing Surveillance (Ph IV)"]
+        direction TB
+        D1["Post-Auth Safety Studies (PASS)"]
+        D2["Comparative Effectiveness"]
+        D3["Treatment Pathways & Adherence"]
+    end
+
+    P1 -->|"Translational Evidence"| P2
+    P2 -->|"Pivotal & Supplementary Data"| P3
+    P3 -->|"Real-World Monitoring"| P4
 ```
 
-*   **Discovery & Pre-Clinical Stage:** Disease natural history, descriptive epidemiology across demographic strata, and current standard-of-care benchmark mapping.
-*   **Clinical Development Stage:** Recruitment feasibility, Synthetic/External Control Arms (ECA) for rare diseases or single-arm trials, and longitudinal EHR follow-up extensions.
-*   **Post-Marketing & Market Access Stage:** Post-Authorization Safety Studies (PASS), Drug Utilization Studies (DUS), head-to-head comparative effectiveness, and Health Technology Assessments (HTA).
+![](/assets/images/slides/01_intro_rwd_rwe/evidence_generation_pathway.jpg)
+
+#### Lifecycle Stage Deliverables & Regulatory Applications
+
+| Lifecycle Phase | Core RWE Objectives | Typical Methodologies & Analytics | Regulatory & Commercial Impact |
+| :--- | :--- | :--- | :--- |
+| **1. Pre-Clinical & Discovery** | Establish disease burden, characterize natural history, and identify underserved patient subpopulations. | Descriptive incidence/prevalence, patient characterization, biomarker stratification. | Strategic portfolio prioritization, target population sizing, and unmet need definition. |
+| **2. Clinical Development (Ph I–III)** | Optimize trial enrollment criteria, simulate protocol feasibility, and construct comparator cohorts. | External Control Arms (ECA), synthetic controls for single-arm trials, EHR trial screening simulation. | Accelerated recruitment, regulatory precedent for rare disease approvals, and reduced trial costs. |
+| **3. Regulatory Approval & Launch** | Demonstrate comparative clinical and economic value to health technology assessment (HTA) bodies. | Health Economics & Outcomes Research (HEOR), cost-effectiveness modeling, budget impact analysis. | Favorable reimbursement pricing, inclusion in clinical guidelines, and label expansion support. |
+| **4. Post-Marketing (Phase IV)** | Monitor long-term safety, detect rare adverse events, and evaluate real-world comparative effectiveness. | Post-Authorization Safety Studies (PASS), active-comparator new-user cohorts (ACNU), drug utilization studies (DUS). | Regulatory safety commitments (EMA/FDA mandates), black-box warning evaluations, and line-of-therapy positioning. |
 
 ## 3. Methodological Biases & Strengths of RWE
 
