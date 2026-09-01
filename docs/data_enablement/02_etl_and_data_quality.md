@@ -47,7 +47,7 @@ flowchart LR
 
 ## 2. The OMOP Vocabulary Engine & Mapping Mechanics
 
-The OMOP Standardized Vocabularies act as the central semantic engine of the CDM. Every medical term from source systems must be resolved through standardized relationships in the `CONCEPT_RELATIONSHIP` table.
+The [OMOP Standardized Vocabularies](https://ohdsi.github.io/CommonDataModel/vocabulary.html) act as the central semantic engine of the CDM. Every medical term from source systems must be resolved through standardized relationships in the `CONCEPT_RELATIONSHIP` table.
 
 ```mermaid
 flowchart LR
@@ -297,3 +297,4 @@ An OMOP ETL is a living software pipeline that requires scheduled maintenance tr
 2. **Kahn MG, Callahan TJ, Barnard J, et al.** (2016). *A Harmonized Data Quality Assessment Terminology and Framework for the Observational Health Data Sciences and Informatics (OHDSI) Network.* EGEMS (Wash DC), 4(1), 1244. [doi:10.13063/2327-9214.1244](https://doi.org/10.13063/2327-9214.1244).
 3. **Blacketer C, Defalco FJ, Ryan PB, Rijnbeek PR.** (2021). *Increasing trust in real-world evidence through evaluation of observational data quality.* JAMIA, 28(10), 2251–2257. [doi:10.1093/jamia/ocab132](https://doi.org/10.1093/jamia/ocab132).
 4. **OHDSI THEMIS Working Group.** (2024). *THEMIS Conventions Library.* [https://ohdsi.github.io/CommonDataModel/themis.html](https://ohdsi.github.io/CommonDataModel/themis.html).
+5. **OHDSI Vocabulary Working Group.** (2024). *OMOP Standardized Vocabularies Specification.* [https://ohdsi.github.io/CommonDataModel/vocabulary.html](https://ohdsi.github.io/CommonDataModel/vocabulary.html).
