@@ -1,10 +1,8 @@
 ---
-
 layout: default
 title: Data Analysis
-nav_order: 3
+nav_order: 4
 has_children: true
-
 ---
 
 # Executing an Observational Study
@@ -16,8 +14,8 @@ To harness the power of the OMOP CDM, a suite of specialized R packages has been
 
 This section is divided into key guides to help you navigate this ecosystem:
 
-1.  **The Foundations of RWD & RWE:** If you want to understand the foundational principles of clinical research design, evidence hierarchies, methodological biases, data taxonomies, and legal governance, start here.
-    -   Explore the: [Foundations of Real-World Evidence](./foundations)
+1.  **Foundations:** If you want to understand the foundational principles of clinical research design, evidence hierarchies, methodological biases, data taxonomies, and legal governance, start here.
+    -   Explore the: [Foundations](../foundations)
 
 2.  **The Conceptual Guide to OMOP (The "Why"):** If you want to understand how clinical ideas are translated into computable definitions and cohort definitions for observational research, start here. *(For data engineering, ETL, and AI models, see [Data Enablement](../data_enablement)).*
     -   Start with the: [Introductory Guide to Observational Research](./intro_to_observational_research)

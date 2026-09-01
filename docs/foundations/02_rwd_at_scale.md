@@ -1,8 +1,7 @@
 ---
 layout: default
 title: Real-World Data at Scale
-parent: RWD & RWE Foundations
-grand_parent: Data Analysis
+parent: Foundations
 nav_order: 2
 ---
 

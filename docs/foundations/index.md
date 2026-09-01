@@ -1,12 +1,11 @@
 ---
 layout: default
-title: RWD & RWE Foundations
-parent: Data Analysis
+title: Foundations
 nav_order: 1
 has_children: true
 ---
 
-# Foundations of Real-World Evidence
+# Foundations
 {: .no_toc }
 
 Translating raw healthcare data into regulatory-grade Real-World Evidence (RWE) requires a strong grounding in epidemiological study design, evidence hierarchies, methodological bias mitigation, data source taxonomies, and legal governance.
@@ -28,4 +27,4 @@ The foundations curriculum is organized into three comprehensive chapters:
 
 ## How This Connects to the Toolkit
 
-Once you master the theoretical principles in this section, continue to the [Introductory Guide to OMOP](../intro_to_observational_research) to learn how clinical ideas are represented as standard `concept_id`s, followed by the [Performing an Analysis](../performing_analysis) guide to write executable R workflows with DARWIN-EU / OHDSI packages.
+Once you master the theoretical principles in this section, continue to the [Introductory Guide to OMOP](../data_analysis/intro_to_observational_research) to learn how clinical ideas are represented as standard `concept_id`s, followed by the [Performing an Analysis](../data_analysis/performing_analysis) guide to write executable R workflows with DARWIN-EU / OHDSI packages.

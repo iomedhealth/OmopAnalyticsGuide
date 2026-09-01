@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Data Mediation
-nav_order: 2
+nav_order: 3
 has_children: true
 ---
 # A Governed Process for Data Access

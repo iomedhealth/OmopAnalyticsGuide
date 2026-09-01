@@ -1,8 +1,7 @@
 ---
 layout: default
 title: Introduction to Real-World Evidence
-parent: RWD & RWE Foundations
-grand_parent: Data Analysis
+parent: Foundations
 nav_order: 1
 ---
 

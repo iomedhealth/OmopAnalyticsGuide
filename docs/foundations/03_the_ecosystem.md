@@ -1,8 +1,7 @@
 ---
 layout: default
 title: The Open Science Ecosystem
-parent: RWD & RWE Foundations
-grand_parent: Data Analysis
+parent: Foundations
 nav_order: 3
 ---
 
