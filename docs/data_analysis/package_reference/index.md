@@ -49,9 +49,11 @@ graph TB
 
     subgraph "Analysis Layer"
         B --> D["CodelistGenerator"]
+        B --> OH["OmopHelpers"]
         B --> E["CohortConstructor"]
         B --> F["OmopSketch"]
         D --> E
+        OH --> E
         E --> G["CohortCharacteristics"]
         E --> H["IncidencePrevalence"]
         E --> I["DrugUtilisation"]
@@ -239,10 +241,12 @@ In summary, **`CohortConstructor`** is your tool for defining the "who" and "wha
 *   **Clinical Questions:**
     *   "Does my algorithm for identifying 'myocardial infarction' in this database correctly capture the true cases?"
     *   "How complete and consistent are numeric values, units, and categories for this laboratory measurement?"
+    *   "How can we pull and merge centrally defined concept sets stored directly in database tables?"
 
 *   **Primary Tools:**
     *   [**`PhenotypeR`**](./PhenotypeR): Specialized diagnostic toolkit to rigorously test and validate phenotype definitions.
     *   [**`MeasurementDiagnostics`**](./MeasurementDiagnostics): Evaluates recording patterns, unit consistency, numeric distributions, and outliers for measurement concepts.
+    *   [**`OmopHelpers`**](./OmopHelpers): In-database concept set retrieval (`concept_set` / `concept_set_item` tables), hierarchical codelist merging, and baseline measurement distribution plotting.
     *   [**`OmopSketch`**](./OmopSketch): Characterizes and profiles tables across an entire OMOP CDM instance for study feasibility.
 
 

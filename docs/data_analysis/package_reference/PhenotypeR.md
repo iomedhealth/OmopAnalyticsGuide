@@ -3,7 +3,7 @@ layout: default
 title: PhenotypeR
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 20
+nav_order: 22
 ---
 
 # [PhenotypeR](https://ohdsi.github.io/PhenotypeR/)
@@ -29,8 +29,8 @@ nav_order: 20
 To install PhenotypeR, you can use the following command in R:
 
 ```r
-# Install from GitHub
-remotes::install_github("OHDSI/PhenotypeR")
+# install.packages("pak")
+pak::pkg_install("ohdsi/PhenotypeR")
 ```
 
 ## Getting Started

@@ -25,8 +25,8 @@ install.packages("CodelistGenerator")
 You can also install the development version from GitHub:
 
 ```r
-# install.packages("devtools")
-devtools::install_github("darwin-eu/CodelistGenerator")
+# install.packages("pak")
+pak::pkg_install("darwin-eu/CodelistGenerator")
 ```
 
 ## Getting Started

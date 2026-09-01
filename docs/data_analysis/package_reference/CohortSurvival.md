@@ -175,11 +175,10 @@ This function adds two columns to your target cohort table:
 
 ```r
 # Add time-to-event information for the death outcome
-model_data <- cdm$mgus_diagnosis %>%
+model_data <- cdm$mgus_diagnosis |>
   addCohortSurvival(
-    cdm = cdm,
     outcomeCohortTable = "death_cohort"
-  ) %>%
+  ) |>
   collect() # Bring the data into R's memory for modeling
 
 # Now, you can use this data frame in other modeling functions

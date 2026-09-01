@@ -3,7 +3,7 @@ layout: default
 title: PatientProfiles
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 19
+nav_order: 21
 ---
 
 # [PatientProfiles](https://darwin-eu.github.io/PatientProfiles/)
@@ -50,12 +50,17 @@ graph TD
 
 ## Installation
 
-To install the PatientProfiles package from GitHub, use the following command in R:
+Install PatientProfiles from CRAN:
 
 ```r
-# Note: Installation instructions were not found and have been inferred.
-# install.packages("devtools")
-devtools::install_github("darwin-eu/PatientProfiles")
+install.packages("PatientProfiles")
+```
+
+Or install the development version from GitHub:
+
+```r
+# install.packages("pak")
+pak::pkg_install("darwin-eu/PatientProfiles")
 ```
 
 ## Getting Started
@@ -80,7 +85,7 @@ Use the `addDemographics()` function to add age, sex, and observation history to
 
 ```r
 # Add demographics to the cohort1 table
-cdm$cohort1 <- cdm$cohort1 %>%
+cdm$cohort1 <- cdm$cohort1 |>
   addDemographics(
     indexDate = "cohort_start_date",
     ageGroup = list(c(0, 18), c(19, 65), c(66, 100))
@@ -227,8 +232,8 @@ Incorporate mortality data into your analysis.
 ### Add Age and Sex to a Cohort
 
 ```r
-cdm$cohort1 <- cdm$cohort1 %>%
-  addAge(indexDate = "cohort_start_date") %>%
+cdm$cohort1 <- cdm$cohort1 |>
+  addAge(indexDate = "cohort_start_date") |>
   addSex()
 
 glimpse(cdm$cohort1)
@@ -239,7 +244,7 @@ glimpse(cdm$cohort1)
 Count how many times patients in `cohort1` also appear in `cohort2` within a year.
 
 ```r
-cdm$cohort1 <- cdm$cohort1 %>%
+cdm$cohort1 <- cdm$cohort1 |>
   addCohortIntersectCount(
     targetCohortTable = "cohort2",
     window = list(c(-365, 365))
@@ -259,7 +264,7 @@ This example demonstrates the iterative workflow of PatientProfiles. We start wi
 First, we start with our cohort of interest and add some basic demographic information.
 
 ```r
-cdm$cohort1 <- cdm$cohort1 %>%
+cdm$cohort1 <- cdm$cohort1 |>
   addDemographics(
     indexDate = "cohort_start_date",
     ageGroup = list(c(0, 18), c(19, 65), c(66, 100))
@@ -272,13 +277,13 @@ cdm$cohort1 <- cdm$cohort1 %>%
 Now, let's see how many of these patients are in `cohort2` and summarize the results.
 
 ```r
-cdm$cohort1 <- cdm$cohort1 %>%
+cdm$cohort1 <- cdm$cohort1 |>
   addCohortIntersectCount(
     targetCohortTable = "cohort2",
     window = list(c(-365, 365))
   )
 
-cdm$cohort1 %>%
+cdm$cohort1 |>
   summariseResult()
 ```
 
@@ -293,19 +298,19 @@ Let's say the summary shows that a significant number of patients in `cohort1` a
 We can now add this new information to our table and re-summarize.
 
 ```r
-cdm$cohort1 <- cdm$cohort1 %>%
+cdm$cohort1 <- cdm$cohort1 |>
   addCohortIntersectDate(
     targetCohortTable = "cohort2",
     window = list(c(-365, 365)),
     nameStyle = "date_of_cohort2"
-  ) %>%
+  ) |>
   addCohortIntersectDays(
     targetCohortTable = "cohort2",
     window = list(c(-365, 365)),
     nameStyle = "days_to_cohort2"
   )
 
-cdm$cohort1 %>%
+cdm$cohort1 |>
   summariseResult()
 ```
 
@@ -315,7 +320,7 @@ This iterative process of adding new characteristics and summarizing the results
 Generate a statistical summary of patient characteristics.
 
 ```r
-cdm$cohort1 %>%
-  addDemographics() %>%
+cdm$cohort1 |>
+  addDemographics() |>
   summariseResult()
 ```

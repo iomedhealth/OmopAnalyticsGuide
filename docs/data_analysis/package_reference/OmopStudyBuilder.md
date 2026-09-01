@@ -3,7 +3,7 @@ layout: default
 title: OmopStudyBuilder
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 22
+nav_order: 19
 ---
 
 # [OmopStudyBuilder](https://oxford-pharmacoepi.github.io/OmopStudyBuilder/)
@@ -72,8 +72,8 @@ Install `OmopStudyBuilder` from CRAN or GitHub:
 install.packages("OmopStudyBuilder")
 
 # Development version from GitHub
-# install.packages("remotes")
-remotes::install_github("oxford-pharmacoepi/OmopStudyBuilder")
+# install.packages("pak")
+pak::pkg_install("oxford-pharmacoepi/OmopStudyBuilder")
 ```
 
 ---

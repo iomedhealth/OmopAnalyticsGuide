@@ -32,8 +32,8 @@ install.packages("IncidencePrevalence")
 
 Alternatively, you can install the development version from GitHub:
 ```r
-# install.packages("remotes")
-remotes::install_github("darwin-eu/IncidencePrevalence")
+# install.packages("pak")
+pak::pkg_install("darwin-eu/IncidencePrevalence")
 ```
 
 ## Getting Started

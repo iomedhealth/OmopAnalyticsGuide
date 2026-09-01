@@ -106,6 +106,7 @@ First, we create a mock CDM reference and generate a cohort of acetaminophen use
 
 ```r
 library(DrugUtilisation)
+library(CohortConstructor)
 library(CDMConnector)
 library(dplyr)
 
@@ -127,9 +128,9 @@ Next, we apply inclusion criteria to define our study population as **new users*
 
 ```r
 # Refine the cohort
-cdm$acetaminophen_users <- cdm$acetaminophen_users %>%
-  requireIsFirstDrugEntry() %>%
-  requireObservationBeforeDrug(days = 365)
+cdm$acetaminophen_users <- cdm$acetaminophen_users |>
+  requireIsFirstEntry() |>
+  requirePriorObservation(minPriorObservation = 365)
 ```
 
 ### 3. Perform Analyses
@@ -138,25 +139,25 @@ Now we can run our desired analyses on the refined cohort.
 
 ```r
 # a) Summarise drug utilisation metrics
-drug_summary <- cdm$acetaminophen_users %>%
+drug_summary <- cdm$acetaminophen_users |>
   summariseDrugUtilisation(
-    ingredientConceptId = 1125315 # Concept ID for acetaminophen
+    ingredientConceptId = 1125315L # Concept ID for acetaminophen
   )
 
 # b) Summarise indications (requires pre-defined indication cohorts)
 # First, create indication cohorts for headache and influenza
-indications <- list(headache = 378253, influenza = 4266367)
-cdm <- generateConceptCohortSet(cdm, name = "indication_cohorts", conceptSet = indications)
+indications <- list(headache = 378253L, influenza = 4266367L)
+cdm$indication_cohorts <- conceptCohort(cdm, conceptSet = indications, name = "indication_cohorts")
 
 # Now, summarise indications within a 30-day window before the drug start date
-indication_summary <- cdm$acetaminophen_users %>%
+indication_summary <- cdm$acetaminophen_users |>
   summariseIndication(
     indicationCohortName = "indication_cohorts",
     indicationWindow = list(c(-30, 0))
   )
 
 # c) Summarise treatment persistence over 1 year
-persistence_summary <- cdm$acetaminophen_users %>%
+persistence_summary <- cdm$acetaminophen_users |>
   summariseProportionOfPatientsCovered(followUpDays = 365)
 ```
 

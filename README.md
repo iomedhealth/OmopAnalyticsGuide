@@ -22,11 +22,21 @@ data analysis.
 | OmopSketch | [ohdsi.github.io][3] |
 | PatientProfiles | https://darwin-eu.github.io/PatientProfiles/ |
 | CodelistGenerator | https://darwin-eu.github.io/CodelistGenerator/ |
+| OmopHelpers | https://github.com/iomedhealth/OmopHelpers |
 | DrugUtilisation | https://darwin-eu.github.io/DrugUtilisation/ |
 | CohortSurvival | https://darwin-eu-dev.github.io/CohortSurvival/ |
 | IncidencePrevalence | https://darwin-eu.github.io/IncidencePrevalence/ |
 | PhenotypeR | [ohdsi.github.io][4] |
 | visOmopResults | https://darwin-eu.github.io/visOmopResults/ |
+| OmopStudyBuilder | https://oxford-pharmacoepi.github.io/OmopStudyBuilder/ |
+| OmopViewer | https://ohdsi.github.io/OmopViewer/ |
+| OmopConstructor | https://ohdsi.github.io/OmopConstructor/ |
+| MeasurementDiagnostics | https://ohdsi.github.io/MeasurementDiagnostics/ |
+| CohortSymmetry | https://ohdsi.github.io/CohortSymmetry/ |
+| EpiStandard | https://oxford-pharmacoepi.github.io/EpiStandard/ |
+| CohortUtilisation | https://github.com/iomedhealth/omopHeor |
+| CohortCosts | https://github.com/iomedhealth/omopHeor |
+| CohortEconomics | https://github.com/iomedhealth/omopHeor |
 
 [1]: https://ohdsi.github.io/omock/
 [2]: https://ohdsi.github.io/CohortConstructor/

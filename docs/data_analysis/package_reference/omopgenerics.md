@@ -3,7 +3,7 @@ layout: default
 title: omopgenerics
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 16
+nav_order: 17
 ---
 
 # [omopgenerics](https://darwin-eu.github.io/omopgenerics/)

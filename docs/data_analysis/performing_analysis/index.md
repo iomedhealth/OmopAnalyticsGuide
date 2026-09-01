@@ -78,8 +78,8 @@ write_schema <- "analysis"
 # Create the cdm object
 cdm <- cdmFromCon(
   con = con,
-  cdm_schema = cdm_schema,
-  write_schema = write_schema
+  cdmSchema = cdm_schema,
+  writeSchema = write_schema
 )
 ```
 
@@ -96,6 +96,7 @@ Base cohort creation functions:
 
 ### Codelist and Cohort Generation
 - **[`CodelistGenerator`](https://darwin-eu.github.io/CodelistGenerator/)**: Use `CodelistGenerator` to create codelists from concept sets. A codelist is a set of medical codes (e.g., for a disease or a drug) that define a clinical idea.
+- **[`OmopHelpers`](../package_reference/OmopHelpers)**: Use `OmopHelpers` (`getCodelistFromConceptSet()`, `getAllConceptSets()`) when concept sets are maintained directly within database tables (`concept_set` and `concept_set_item`).
 - **[`CohortConstructor`](https://ohdsi.github.io/CohortConstructor/)**: Use `CohortConstructor` to build cohorts from these codelists.
 
 For example, to create a cohort of patients with Hypertrophic Cardiomyopathy (HCM) who have received a first-line therapy:
@@ -104,26 +105,27 @@ For example, to create a cohort of patients with Hypertrophic Cardiomyopathy (HC
 library(CodelistGenerator)
 library(CohortConstructor)
 
-# 1. Get codelists for the disease and treatments
-hcm_codes <- getCodelistFromConceptSet(4247, cdm)
-beta_blockers_codes <- getCodelistFromConceptSet(4886, cdm)
-ccb_non_dhp_codes <- getCodelistFromConceptSet(4887, cdm)
+# 1. Get codelists for the disease and treatments (or use OmopHelpers::getCodelistFromConceptSet())
+hcm_codes <- getCandidateCodes(cdm, keywords = "hypertrophic cardiomyopathy")
+beta_blockers_codes <- getDrugIngredientCodes(cdm, name = "metoprolol")
+ccb_non_dhp_codes <- getDrugIngredientCodes(cdm, name = "verapamil")
 
 # 2. Combine treatment codes into a single "first-line therapy" codelist
 first_line_therapy_codes <- c(
-  beta_blockers_codes,
-  ccb_non_dhp_codes
+  beta_blockers_codes$concept_id,
+  ccb_non_dhp_codes$concept_id
 )
 
 # 3. Create initial cohorts based on the codelists
-cdm$hcm <- conceptCohort(cdm, hcm_codes, name = "hcm")
-cdm$first_line_therapy <- conceptCohort(cdm, first_line_therapy_codes, name = "first_line_therapy")
+cdm$hcm <- conceptCohort(cdm, list(hcm = hcm_codes$concept_id), name = "hcm")
+cdm$first_line_therapy <- conceptCohort(cdm, list(first_line = first_line_therapy_codes), name = "first_line_therapy")
 
 # 4. Intersect the cohorts to find patients with HCM who have received the therapy
 cdm$hcm_first_line_treated <- cdm$first_line_therapy |>
   requireCohortIntersect(
     targetCohortTable = "hcm",
-    window = c(-Inf, 0) # The HCM diagnosis must be on or before the treatment start date
+    window = c(-Inf, 0),
+    name = "hcm_first_line_treated" # The HCM diagnosis must be on or before the treatment start date
   )
 ```
 
@@ -158,12 +160,9 @@ A critical first step is to generate the baseline characteristics of your study 
 
 ```r
 library(CohortCharacteristics)
-library(PatientProfiles)
 
-# Example: Summarize age and sex for the study cohort
-cdm$hcm_first_line_treated |>
-  addAge() |>
-  addSex() |>
+# Example: Summarize baseline demographics for the study cohort
+results <- cdm$hcm_first_line_treated |>
   summariseCharacteristics(
     demographics = TRUE,
     ageGroup = list(c(18, 49), c(50, 69), c(70, 150))
@@ -185,12 +184,9 @@ The final phase involves generating and exporting the results in a clear and sha
 ```r
 library(visOmopResults)
 library(CohortCharacteristics)
-library(PatientProfiles)
 
 # Generate and table the characteristics summary
 results <- cdm$hcm_first_line_treated |>
-  addAge() |>
-  addSex() |>
   summariseCharacteristics()
 
 tableCharacteristics(results)

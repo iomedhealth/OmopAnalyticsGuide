@@ -61,8 +61,8 @@ graph TD
 install.packages("CohortConstructor")
 
 # Development version from GitHub
-# install.packages("devtools")
-devtools::install_github("ohdsi/CohortConstructor")
+# install.packages("pak")
+pak::pkg_install("ohdsi/CohortConstructor")
 ```
 
 ### Prerequisites

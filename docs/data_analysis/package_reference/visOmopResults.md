@@ -3,7 +3,7 @@ layout: default
 title: visOmopResults
 parent: Package Reference
 grand_parent: Data Analysis
-nav_order: 21
+nav_order: 23
 ---
 
 # [visOmopResults](https://darwin-eu.github.io/visOmopResults/)
@@ -25,10 +25,17 @@ The `[visOmopResults](https://darwin-eu.github.io/visOmopResults/)` R package is
 
 ## Installation
 
-You can install the development version of `visOmopResults` from GitHub:
+Install `visOmopResults` from CRAN:
+
 ```r
-# install.packages("remotes")
-remotes::install_github("darwin-eu/visOmopResults")
+install.packages("visOmopResults")
+```
+
+Or install the development version from GitHub:
+
+```r
+# install.packages("pak")
+pak::pkg_install("darwin-eu/visOmopResults")
 ```
 
 ## Getting Started
@@ -163,7 +170,7 @@ This example demonstrates how to create a box plot to visualize distributions ac
 
 ```r
 # Filter for distribution estimates
-distribution_result <- result %>%
+distribution_result <- result |>
   filter(estimate_type %in% c("min", "q25", "median", "q75", "max"))
 
 boxPlot(

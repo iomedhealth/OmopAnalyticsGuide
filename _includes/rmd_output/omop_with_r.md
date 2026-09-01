@@ -251,22 +251,18 @@ standardized, reproducible summaries.
 library(CohortCharacteristics)
 
 # First create a cohort
-cdm <- generateConceptCohortSet(
-  cdm = cdm,
-  name = "diabetes",
-  conceptSet = list("type_2_diabetes" = 201826),
-  end = "observation_period_end_date",
-  limit = "first"
-)
+cdm$diabetes <- cdm |>
+  conceptCohort(
+    conceptSet = list("type_2_diabetes" = 201826L),
+    name = "diabetes"
+  ) |>
+  requireIsFirstEntry()
 
 # Summarize characteristics of the diabetes cohort
 characteristics <- cdm$diabetes |>
   summariseCharacteristics(
-    ageGroup = list(c(0, 17), c(18, 64), c(65, 999)),
-    gender = TRUE,
-    priorObservation = TRUE
-  ) |>
-  collect()
+    ageGroup = list(c(0, 17), c(18, 64), c(65, 150))
+  )
 ```
 
 > **Why CohortCharacteristics?** This package provides standardized
@@ -308,7 +304,7 @@ Define clinical concepts:
 
 ``` r
 # Get concepts for Gender
-gender_codes <- getDescendants(cdm, 8507)  # MALE concept
+gender_codes <- getConceptDescendants(cdm, 8507L)  # MALE concept
 
 # Note: In a full OMOP CDM, you would use concept names or IDs for clinical conditions
 ```
@@ -318,25 +314,23 @@ gender_codes <- getDescendants(cdm, 8507)  # MALE concept
 Create cohorts using concept sets:
 
 ``` r
-cdm <- generateConceptCohortSet(
-  cdm = cdm,
-  name = "diabetes",
-  conceptSet = list("type_2_diabetes" = diabetes_codes),
-  end = "observation_period_end_date",
-  limit = "first"
-)
+cdm$diabetes <- cdm |>
+  conceptCohort(
+    conceptSet = list("type_2_diabetes" = diabetes_codes),
+    name = "diabetes"
+  ) |>
+  requireIsFirstEntry()
 ```
 
 Create a medication user cohort:
 
 ``` r
-cdm <- generateConceptCohortSet(
-  cdm = cdm,
-  name = "metformin_users",
-  conceptSet = list("metformin" = metformin_codes),
-  end = "observation_period_end_date",
-  limit = "first"
-)
+cdm$metformin_users <- cdm |>
+  conceptCohort(
+    conceptSet = list("metformin" = metformin_codes),
+    name = "metformin_users"
+  ) |>
+  requireIsFirstEntry()
 ```
 
 ### Advanced Cohort Definitions
@@ -345,15 +339,12 @@ Combine multiple criteria:
 
 ``` r
 # Patients with diabetes who started metformin within 1 year of diagnosis
-cdm <- generateCohortSet(
-  cdm = cdm,
-  name = "diabetes_metformin",
-  cohortSet = data.frame(
-    cohort_definition_id = 1,
-    cohort_name = "Diabetes with Metformin",
-    # Define cohort entry criteria here
+cdm$diabetes_metformin <- cdm$metformin_users |>
+  requireCohortIntersect(
+    targetCohortTable = "diabetes",
+    window = c(-365, 0),
+    name = "diabetes_metformin"
   )
-)
 ```
 
 ### Validating Cohorts
@@ -477,16 +468,15 @@ between `collect()` and `compute()`.
 cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "scratch")
 
 # 2. Extract codelist
-diabetes_codes <- getDescendants(cdm, "Type 2 diabetes mellitus")
+diabetes_codes <- getCandidateCodes(cdm, keywords = "Type 2 diabetes mellitus")
 
 # 3. Generate cohort
-cdm <- generateConceptCohortSet(
-  cdm = cdm,
-  name = "diabetes",
-  conceptSet = list("type_2_diabetes" = diabetes_codes),
-  end = "observation_period_end_date",
-  limit = "first"
-)
+cdm$diabetes <- cdm |>
+  conceptCohort(
+    conceptSet = list("type_2_diabetes" = diabetes_codes$concept_id),
+    name = "diabetes"
+  ) |>
+  requireIsFirstEntry()
 
 # 4. Characterize and collect summary
 cohort_demographics <- cdm$diabetes |>

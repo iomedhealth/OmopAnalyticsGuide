@@ -20,3 +20,5 @@ oxford-pharmacoepi/EpiStandard,https://oxford-pharmacoepi.github.io/EpiStandard/
 OHDSI/MeasurementDiagnostics,https://ohdsi.github.io/MeasurementDiagnostics/,MeasurementDiagnostics
 OHDSI/OmopConstructor,https://ohdsi.github.io/OmopConstructor/,OmopConstructor
 OHDSI/OmopViewer,https://ohdsi.github.io/OmopViewer/,OmopViewer
+oxford-pharmacoepi/OmopStudyBuilder,https://oxford-pharmacoepi.github.io/OmopStudyBuilder/,OmopStudyBuilder
+iomedhealth/OmopHelpers,https://github.com/iomedhealth/OmopHelpers,OmopHelpers
