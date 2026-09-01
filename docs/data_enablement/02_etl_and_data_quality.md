@@ -10,6 +10,17 @@ nav_order: 2
 
 Extract, Transform, and Load (ETL) into the OMOP Common Data Model is the engineering pipeline that converts heterogeneous, raw clinical data into an auditable, research-grade asset. Rather than a purely technical data migration, an OMOP ETL is a multidisciplinary translation process that unifies database schemas, standardizes clinical terminologies, and guarantees longitudinal data quality.
 
+### What is an ETL? (A Guide for Non-Technical Stakeholders)
+{: .no_toc }
+
+If you are a clinician, hospital administrator, or research coordinator, think of an ETL as a **universal translation and organization process**:
+
+*   **Extract (Gather):** Securely pulling raw healthcare records (prescriptions, diagnoses, lab assays, clinic visits) out of departmental hospital systems (EHRs, pharmacy software, laboratory servers) without altering or disrupting operational hospital care.
+*   **Transform (Translate & Standardize):** Converting fragmented hospital "dialects" into a single, shared international clinical language. For example, translating internal lab shorthand (`GLUC_F`) into a standard LOINC test (`1558-6`), mapping local Spanish or German diagnosis strings to standard SNOMED CT concepts, and aligning date formats.
+*   **Load (Store for Research):** Storing these standardized, de-identified records in the OMOP Common Data Model schema inside the hospital's secure environment.
+
+**Why it matters:** Once the ETL is complete, the hospital's data speaks the exact same language as hundreds of research hospitals worldwide. Researchers can execute multi-center studies and regulatory network analyses (such as DARWIN EU) instantly, while patient privacy remains fully protected behind the hospital's firewall.
+
 1. TOC
 {:toc}
 
@@ -126,7 +137,7 @@ The first rule of OMOP ETL engineering is **zero assumptions**. Source databases
 
 ![](/assets/images/slides/05_etl_quality/white_rabbit_scan_report.png)
 
-*   **Privacy-Preserving Cell Suppression:** Enforces a minimum cell count threshold (default $\ge 5$). Any distinct value appearing fewer than 5 times is truncated from the report to eliminate Personal Identifiable Information (PII).
+*   **Privacy-Preserving Cell Suppression:** Enforces a minimum cell count threshold (default > 5). Any distinct value appearing fewer than 5 times is truncated from the report to eliminate Personal Identifiable Information (PII).
 *   **Comprehensive `ScanReport.xlsx` Output:**
     *   *Overview Tab:* Total row counts, field count, data types, and null percentages per column.
     *   *Field Value Distribution:* Frequency counts for all distinct values across every column, immediately highlighting anomalous codes, inverted dates, or unmapped categorical flags.
