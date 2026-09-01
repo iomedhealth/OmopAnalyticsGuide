@@ -1,1 +1,0 @@
-# Page: Error fetching wiki for OHDSI/omock: Repository not found. Visit https://deepwiki.com/OHDSI/omock to index it.

@@ -1,1 +1,0 @@
-# Page: Error fetching wiki for darwin-eu/omopgenerics: Repository not found. Visit https://deepwiki.com/darwin-eu/omopgenerics to index it.
