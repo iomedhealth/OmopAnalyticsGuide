@@ -304,7 +304,7 @@ Define clinical concepts:
 
 ``` r
 # Get concepts for Gender
-gender_codes <- getConceptDescendants(cdm, 8507L)  # MALE concept
+gender_codes <- getDescendants(cdm, conceptId = 8507L)  # MALE concept
 
 # Note: In a full OMOP CDM, you would use concept names or IDs for clinical conditions
 ```
