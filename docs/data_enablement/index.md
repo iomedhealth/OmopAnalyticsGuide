@@ -17,11 +17,9 @@ For technical teams, data engineers, and bioinformaticians, explore our in-depth
 
 | Guide | Core Technical Topics |
 | :--- | :--- |
-| [**1. OMOP CDM Architecture & Tables**](./01_omop_cdm_architecture) | Relational CDM v5.4 schema, clinical domain tables (`PERSON`, `CONDITION_OCCURRENCE`, `MEASUREMENT`, `DRUG_EXPOSURE`), standard column conventions, and SQL/R pushdown execution. |
+| [**1. OMOP CDM Architecture**](./01_omop_cdm_architecture) | Relational CDM v5.4 schema, clinical domain tables (`PERSON`, `CONDITION_OCCURRENCE`, `MEASUREMENT`, `DRUG_EXPOSURE`), standard column conventions, and SQL/R pushdown execution. |
 | [**2. Developing & Evaluating an OMOP ETL**](./02_etl_and_data_quality) | Source-to-Standard vocabulary mapping, White Rabbit database profiling, Rabbit-In-A-Hat mapping specifications, `SOURCE_TO_STANDARD.sql` CTEs, and DataQualityDashboard (DQD) validation. |
 | [**3. AI in the OMOP CDM**](./03_ai_in_omop_cdm) | Automated Terminology Mapping (ATM) for local codes, Natural Language Processing (NLP) on unstructured clinical notes (80% of EHR data), and AI quality verification loops. |
-
----
 
 The enablement process is divided into three main phases:
 
