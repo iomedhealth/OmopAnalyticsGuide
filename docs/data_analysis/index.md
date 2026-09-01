@@ -16,19 +16,22 @@ To harness the power of the OMOP CDM, a suite of specialized R packages has been
 
 This section is divided into key guides to help you navigate this ecosystem:
 
-1.  **The Conceptual Guide (The "Why"):** If you are new to the OMOP CDM or want to understand the core principles of how clinical ideas are translated into computable definitions, start here. This guide is for researchers, epidemiologists, and anyone who wants to understand the methodology before diving into the code.
+1.  **The Foundations of RWD & RWE:** If you want to understand the foundational principles of clinical research design, evidence hierarchies, methodological biases, data taxonomies, and legal governance, start here.
+    -   Explore the: [Foundations of Real-World Evidence](./foundations)
+
+2.  **The Conceptual Guide to OMOP (The "Why"):** If you want to understand how clinical ideas are translated into computable definitions and cohort definitions for observational research, start here. *(For data engineering, ETL, and AI models, see [Data Enablement](../data_enablement)).*
     -   Start with the: [Introductory Guide to Observational Research](./intro_to_observational_research)
 
-2.  **The Practical Guide (The "How"):** If you are ready to start writing code and want a step-by-step walkthrough of a typical analysis workflow, from connecting to the database to generating final results, this guide is for you. It provides the practical sequence of operations for executing a study.
+3.  **The Practical Guide (The "How"):** If you are ready to start writing code and want a step-by-step walkthrough of a typical analysis workflow, from connecting to the database to generating final results, this guide is for you.
     -   Follow the guide to: [Performing an Analysis](./performing_analysis)
 
-3.  **The Tool Reference (The "What"):** This guide provides a comprehensive overview of the available R packages, categorized by their purpose. It explains what each tool does and is the perfect place to go when you know the type of analysis you need (e.g., "survival analysis") and want to find the right package for the job.
+4.  **The Tool Reference (The "What"):** This guide provides a comprehensive overview of the available R packages, categorized by their purpose.
     -   Explore the: [Package Reference](./package_reference)
 
-4.  **The Study Templates (The "How To"):** This section contains complete, executable examples of different types of observational studies (e.g., a cohort characterization, an incidence/prevalence study). These templates serve as a practical starting point and can be adapted for your own research questions.
+5.  **The Study Templates (The "How To"):** This section contains complete, executable examples of different types of observational studies.
     -   Adapt from the: [Catalogue of Standard Studies](./standard_studies)
 
-5.  **Troubleshooting:** Solutions to common setup, installation (e.g., DuckDB compilation issues), database connection, and runtime errors.
+6.  **Troubleshooting:** Solutions to common setup, installation, database connection, and runtime errors.
     -   Review the: [Troubleshooting Guide](./troubleshooting)
 
 ## Package Categories and Purposes

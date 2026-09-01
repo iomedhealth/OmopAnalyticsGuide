@@ -3,7 +3,7 @@
 layout: default
 title: Introductory Guide
 parent: Data Analysis
-nav_order: 1
+nav_order: 2
 
 ---
 
