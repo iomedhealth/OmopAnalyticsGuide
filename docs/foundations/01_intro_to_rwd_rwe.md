@@ -198,38 +198,21 @@ The findings demonstrated the real-world generalizability gap:
 Real-World Evidence generates value across every phase of a therapeutic product's development and commercial lifecycle, evolving from early disease characterization to post-market safety surveillance:
 
 ```mermaid
-flowchart LR
-    subgraph P1["1. Pre-Clinical & Discovery"]
-        direction TB
-        A1["Disease Natural History"]
-        A2["Incidence & Prevalence"]
-        A3["Unmet Need & Target Sizing"]
-    end
-
-    subgraph P2["2. Clinical Development (Ph I–III)"]
-        direction TB
-        B1["Protocol Feasibility Simulation"]
-        B2["External / Synthetic Control Arms"]
-        B3["Pragmatic Trial Extensions"]
-    end
-
-    subgraph P3["3. Regulatory Approval & Launch"]
-        direction TB
-        C1["Label Expansions & Submissions"]
-        C2["Health Economics (HEOR / HTA)"]
-        C3["Budget Impact & Pricing Dossiers"]
-    end
-
-    subgraph P4["4. Post-Marketing Surveillance (Ph IV)"]
-        direction TB
-        D1["Post-Auth Safety Studies (PASS)"]
-        D2["Comparative Effectiveness"]
-        D3["Treatment Pathways & Adherence"]
-    end
-
-    P1 -->|"Translational Evidence"| P2
-    P2 -->|"Pivotal & Supplementary Data"| P3
-    P3 -->|"Real-World Monitoring"| P4
+timeline
+    title RWE Across the Medical Product Lifecycle
+    section 1. Pre-Clinical & Discovery
+        Disease Epidemiology : Incidence & prevalence benchmarks : Natural history & disease progression
+        Unmet Need & Sizing : Standard of care mapping : Target patient subpopulation sizing
+    section 2. Clinical Development (Ph I–III)
+        Trial Feasibility : Protocol optimization & site selection : Inclusion/exclusion simulation
+        Comparator Synthesis : External Control Arms (ECA) : Synthetic controls for rare diseases
+        Pragmatic Extensions : Long-term trial follow-up : Real-world safety monitoring
+    section 3. Regulatory Approval & Launch
+        Submissions & Approvals : Label expansions & pediatric waivers : Accelerated approval validation
+        HTA & Market Access : Health Economics & Outcomes Research (HEOR) : Budget impact & pricing dossiers
+    section 4. Post-Marketing Surveillance (Ph IV)
+        Safety Surveillance : Post-Authorization Safety Studies (PASS) : Rare adverse event signal detection
+        Comparative Effectiveness : Head-to-head active comparator cohorts : Real-world treatment pathways & adherence
 ```
 
 ![](/assets/images/slides/01_intro_rwd_rwe/evidence_generation_pathway.jpg)
